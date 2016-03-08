@@ -1,0 +1,8 @@
+__pycache__/
+[_.]ignore/
+
+
+.*project
+*.py[co]
+*.log
+*.db
