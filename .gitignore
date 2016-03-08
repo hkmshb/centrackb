@@ -2,6 +2,7 @@ __pycache__/
 [_.]ignore/
 
 
+secret.py
 .*project
 *.py[co]
 *.log
