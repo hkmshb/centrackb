@@ -5,7 +5,7 @@ try:
 except:
     from io import StringIO
 
-from kedat.core import Storage as _
+from utils import Storage as _
 import db
 
 

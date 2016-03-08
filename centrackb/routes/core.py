@@ -5,11 +5,10 @@ from datetime import datetime, date
 from bottle import HTTPError, post, route, request, response, redirect,\
      static_file
 from requests.exceptions import ConnectionError
-from kedat.core import Storage as _
 
 import db
 from utils import get_session, write_log, get_weekdate_bounds, view,\
-     _get_ref_date
+     _get_ref_date, Storage as _
 from services import api, choices, stats, transform, report
 from settings import FMT_SHORTDATE, NL_PAGE_SIZE
 from routes import authnz, authorize

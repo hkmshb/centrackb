@@ -7,7 +7,6 @@ from datetime import datetime
 from dateutil import relativedelta as rd
 from bottle import request, view as fn_view
 
-from kedat.core import Storage as _
 import settings
 
 
@@ -57,7 +56,7 @@ def get_session():
     """Retrieves the session object"""
     session = request.environ.get('beaker.session')
     if 'messages' not in session:
-        session['messages'] = _({
+        session['messages'] = Storage({
             'pass': [], 
             'fail': [], 
             'warn': []
@@ -150,6 +149,31 @@ def paginate(cursor, size=None, qs_page='page', qs_page_size='pageSize'):
     return p
 
 
+class Storage(dict):
+    """Represents a dictionary object whose elements can be accessed and set 
+    using the dot object notation. Thus in addition to `foo['bar']`, `foo.bar`
+    can equally be used.
+    """
+    
+    def __getattr__(self, key):
+        return self.__getitem__(key)
+    
+    def __getitem__(self, key):
+        return dict.get(self, key, None)
+    
+    def __getstate__(self):
+        return dict(self)
+    
+    def __setattr__(self, key, value):
+        self[key] = value
+    
+    def __setstate__(self, value):
+        dict.__init__(self, value)
+    
+    def __repr__(self):
+        return "<Storage %s>" % dict.__repr__(self)
+
+
 class EmptyPage(Exception):
     pass
 
@@ -187,7 +211,7 @@ class Paginator:
                     cursor = p.cursor\
                               .skip(skip_size)\
                               .limit(p.page_size)
-                    items = [_(item) for item in cursor]
+                    items = [Storage(item) for item in cursor]
                 except Exception as ex:
                     items = []
                 self.cache = items

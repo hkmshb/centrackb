@@ -5,9 +5,8 @@ from bottle import HTTPError, post, route, request, redirect
 from requests import ConnectionError
 import pymongo
 
-from kedat.core import Storage as _
+from utils import view, get_session, Storage as _
 from routes import authnz, authorize
-from utils import view, get_session
 from services import api, imxport
 import db, forms
 

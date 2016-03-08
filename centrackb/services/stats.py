@@ -4,7 +4,7 @@ from datetime import datetime
 import db
 import utils
 from collections import OrderedDict
-from kedat.core import Storage as _
+from utils import Storage as _
 
 
 

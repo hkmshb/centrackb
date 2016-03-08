@@ -3,7 +3,7 @@ Routes for API access.
 """
 from datetime import datetime
 from bottle import route, request
-from kedat.core import Storage as _
+from utils import Storage as _
 
 import db, forms
 from routes import authorize

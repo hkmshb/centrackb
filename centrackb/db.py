@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 
 import utils
 import settings
-from kedat.core import Storage as _
+from utils import Storage as _
 
 
 
