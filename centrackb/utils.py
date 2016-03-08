@@ -30,7 +30,7 @@ def view(tmpl_name):
 
 def write_log(lines):
     try:
-        filepath = os.path.join(settings.BASE_DIR, 'centrak.error.log')
+        filepath = os.path.join(settings.DUMP_DIR, 'centrak.error.log')
         stamp = datetime.now().isoformat()
         with open(filepath, 'a') as f:
             f.write('\r\n'.join([('[%s]: %s' % (stamp, line)) for line in lines]))

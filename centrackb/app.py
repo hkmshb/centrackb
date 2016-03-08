@@ -25,8 +25,8 @@ def wsgi_app():
     when the site is published to Microsoft Azure."""
     session_options = {
         'session.type': 'file',
-        'session.cookie_expires': 300,
-        'session.data_dir': './session-dat',
+        'session.cookie_expires': 300,     # 300 seconds = 5 minutes
+        'session.data_dir': os.path.join(settings.DUMP_DIR, 'session-data'),
         'session.auto': True
     }
     app = SessionMiddleware(bottle.default_app(), session_options)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     STATIC_ROOT = os.path.join(settings.BASE_DIR, 'static').replace('\\', '/')
     HOST = os.environ.get('SERVER_HOST', 'localhost')
     try:
-        PORT = int(os.environ.get('XSERVER_PORT', '5555'))
+        PORT = int(os.environ.get('SERVER_PORT', '5555'))
     except ValueError:
         PORT = 5555
 

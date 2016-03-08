@@ -4,11 +4,11 @@ from datetime import datetime
 
 import db
 from services import stats
-from settings import BASE_DIR, KEDAT_DIR, report_cols
+from settings import BASE_DIR, DUMP_DIR, report_cols
 
 
 
-REPORT_DIR = os.path.join(KEDAT_DIR, '..', '_reports')
+REPORT_DIR = os.path.join(DUMP_DIR, '_reports')
 if not os.path.exists(REPORT_DIR):
     os.makedirs(REPORT_DIR)
 

@@ -4,19 +4,19 @@ Routes (Controller) packages.
 import os
 from cork import Cork
 from cork.backends import SQLiteBackend
+
 from utils import make_auth_decorator
+from settings import DUMP_DIR
 
 
 
 __all__ = ['admin', 'account', 'api', 'core']
-_base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-_aucf_dir = os.path.join(_base_dir, 'auth_conf')
-_audb_dir = os.path.join(_base_dir, 'centrak-uam.db')   # user-authn-mgmt
+AUDB_DIR = os.path.join(DUMP_DIR, 'centrak-uam.db')   # user-authn-mgmt
 
 
 # authnz
-try: backend = SQLiteBackend(_audb_dir, initialize='True')
-except: backend = SQLiteBackend(_audb_dir)
+try: backend = SQLiteBackend(AUDB_DIR, initialize='True')
+except: backend = SQLiteBackend(AUDB_DIR)
     
 authnz = Cork(backend=backend)
 authorize = make_auth_decorator(

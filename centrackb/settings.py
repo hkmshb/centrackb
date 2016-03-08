@@ -6,15 +6,23 @@ import sys
 from secret import *
 
 
+
 # directory paths
 BASE_DIR = os.path.dirname(__file__)
-KEDAT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', '..'))
-sys.path.append(KEDAT_DIR)
+
+
+# check that key settings are provided in secret.py module
+try:
+    DUMP_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', DUMP_DIR_NAME))
+    API_DEFAULT_TOKEN = API_TOKEN_EAGLE_EYE
+except NameError:
+    msg = ('secret.py is expected to define some key application configurations '
+           'refer to documentation to see list of expected configurations.')
+    print(msg)
+    sys.exit(0)
 
 
 # API
-API_DEFAULT_TOKEN=API_TOKEN_EAGLE_EYE
-
 AUTH_HEADER = {
     'Authorization': 'Token ' + API_DEFAULT_TOKEN 
 }
