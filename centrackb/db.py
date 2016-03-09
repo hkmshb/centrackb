@@ -13,7 +13,7 @@ from utils import Storage as _
 
 # connection
 conn = pymongo.MongoClient()
-db = conn.centrak
+db = conn[settings.MONGODB_NAME]
 
 
 # voltage ratios

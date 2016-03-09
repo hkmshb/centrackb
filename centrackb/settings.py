@@ -21,11 +21,16 @@ except NameError:
     print(msg)
     sys.exit(0)
 
+# other dirs
+REPORTS_DIR = os.path.join(DUMP_DIR, '_reports')
+
 
 # API
 AUTH_HEADER = {
     'Authorization': 'Token ' + API_DEFAULT_TOKEN 
 }
+
+MONGODB_NAME = 'centrak'
 
 
 # pagination

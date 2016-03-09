@@ -262,13 +262,13 @@ def update_view(item_id):
 @view('export_result')
 def export_captures(record_type):
     import os, csv
-    from settings import KEDAT_DIR, report_cols
+    from settings import REPORTS_DIR, report_cols
     
     table = (db.Capture if record_type == 'captures' else db.Update)
     resp = _query_capture(table, None, None, False)
     
     filename = '%s-export@%s.csv' % (record_type, datetime.today().strftime('%Y%m%dT%H%M'))
-    filepath = os.path.join(KEDAT_DIR, '..', '_reports', filename)
+    filepath = os.path.join(REPORTS_DIR, filename)
     extract = lambda r: {k: r.get(k, '-') for k in report_cols}
     
     dialect = csv.excel
@@ -285,8 +285,7 @@ def export_captures(record_type):
             csvfile.flush()
             status = 'Success'
         
-        root_dir = os.path.join(KEDAT_DIR, '..', '_reports')
-        return static_file(filename, root=root_dir, download=True)
+        return static_file(filename, root=REPORTS_DIR, download=True)
     except Exception as ex:
         os.remove(filepath)
         status = 'Failed'

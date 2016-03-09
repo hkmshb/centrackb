@@ -3,20 +3,18 @@ Routes (Controller) packages.
 """
 import os
 from cork import Cork
-from cork.backends import SQLiteBackend
+from cork.backends import MongoDBBackend
 
 from utils import make_auth_decorator
-from settings import DUMP_DIR
+from settings import MONGODB_NAME
 
 
 
 __all__ = ['admin', 'account', 'api', 'core']
-AUDB_DIR = os.path.join(DUMP_DIR, 'centrak-uam.db')   # user-authn-mgmt
 
 
 # authnz
-try: backend = SQLiteBackend(AUDB_DIR, initialize='True')
-except: backend = SQLiteBackend(AUDB_DIR)
+backend = MongoDBBackend(db_name=MONGODB_NAME)
     
 authnz = Cork(backend=backend)
 authorize = make_auth_decorator(
