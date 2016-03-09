@@ -6,7 +6,7 @@ from bottle import route, request
 from utils import Storage as _
 
 import db, forms
-from routes import authorize
+from routes import authnz, authorize
 
 
 _CHOICES_CACHE = None
@@ -75,14 +75,22 @@ def capture_update(record_type, record_id):
     else:
         snapshot = record['snapshots']['original']['capture']
         
-    # save changes
+    # include audit details
     last_updated = datetime.today().strftime('%Y-%m-%d')
     capture_upd.last_updated = last_updated
+    
+    # include user details
+    current_user = authnz.current_user
+    capture_upd.updated_by = {
+        'username': current_user.username,
+        'email': current_user.email_addr,
+        'role': current_user.role
+    }
+    
+    # store snapshot of original data
     capture_upd.snapshots = {
         'original': {
-            'capture': snapshot,
-            'last_updated': last_updated,
-            'updated_by': None
+            'capture': snapshot
         }
     }
     table.replace(record_id, capture_upd)
