@@ -1,9 +1,10 @@
 ﻿"""
 Routes and views for the bottle application.
 """
+import sys
 from datetime import datetime, date
 from bottle import HTTPError, post, route, request, response, redirect,\
-     static_file
+     error, static_file, view as viewb
 from requests.exceptions import ConnectionError
 
 import db
@@ -389,4 +390,28 @@ def _query_duplicate_count(table_name):
 def _query_updates_count(record_id, rseq):
     result = db.db.updates.count({'_id': {'$ne': record_id}, 'rseq': rseq})
     return result
+
+
+# custom error pages
+
+if '--debug' not in sys.argv:
+    @error(code=404)
+    @error(code=500)
+    @viewb('error/page.tpl')
+    def custom_error_handler(http_error):
+        context = {
+            'title': 'CENTrak : Error',
+            'year': datetime.now().year,
+        }
+        
+        status_code = http_error.status_code
+        context['header'] = http_error.status_code
+        if status_code == 404:
+            context['message'] = 'Oooops! Requested resource was not found!'
+        elif status_code == 500:
+            context['message'] = (
+                'An internal server error just occurred. Should this error '
+                'persist, please contact the administrator and report this '
+                'issue.')
+        return context
 
