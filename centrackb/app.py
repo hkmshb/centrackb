@@ -25,7 +25,8 @@ def wsgi_app():
     when the site is published to Microsoft Azure."""
     session_options = {
         'session.type': 'file',
-        'session.cookie_expires': 300,     # 300 seconds = 5 minutes
+        # Issue #4 [local-gogs]: session expiration handling
+        'session.timeout': 210,     # 210 sec = 3min.30sec
         'session.data_dir': os.path.join(settings.DUMP_DIR, 'session-data'),
         'session.auto': True
     }
