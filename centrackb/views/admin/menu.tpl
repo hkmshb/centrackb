@@ -1,4 +1,5 @@
-% menus = (('/admin/projects/', 'Projects'),
+% menus = (('/admin/users/', 'Users'),
+%          ('/admin/projects/', 'Projects'),
 %          ('/admin/xforms/', 'XForms'),
 %          ('/admin/feeders/', 'Feeders'),
 %          ('/admin/stations/', 'Stations'))

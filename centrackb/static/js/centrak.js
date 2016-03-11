@@ -36,7 +36,7 @@ handleCaptureFiltering = function() {
     var pathname = window.location.pathname;
     window.location = pathname + '?' + encodeURI(query);
     return false;
-};
+},
 handleCaptureExport = function() {
 	var urlpath = window.location.toString()
 	  , pathname = window.location.pathname
@@ -51,7 +51,10 @@ handleCaptureExport = function() {
 	
 	window.location = target_url;
 	return false;
-}
+},
+handleUserActivation = function() {
+	
+};
 
 App = function () {
     'use strict';
@@ -72,6 +75,76 @@ App = function () {
             $('[name=export_csv]').on('click', function() {
                 return handleCaptureExport();
             });
+        },
+        bindForUserManagement: function() {
+            var self = this;
+            $('[name=activate_reg]').on('click', function() {
+                var code = $(this).data('registration-code')
+                  , msg = 'Are you sure you want to activate this registration?'; 
+        		
+                self.confirm(msg, function(result) {
+                    if (result === true) {
+        				$.ajax({
+        					type: 'POST',
+        					url: '/api/users/activate',
+        					data: {'registration-code': code},
+        					success: function(data, status) {
+        					    self.alert(data);
+        					    var urlpath = window.location.pathname;				
+                                window.location.pathname = urlpath;
+                            }
+                        });
+                    }
+                });
+            });
+            $('[name=delete_reg]').on('click', function() {
+                var code = $(this).data('registration-code');
+                alert(code);
+            });
+            $('[name=delete_user]').on('click', function() {
+        		var username = $(this).data('username')
+        		  , msg = 'Are you sure you want to delete this account? This '
+        			    + 'operation cannot be undone.'
+        	    
+                self.confirm(msg, function(result) {
+                    if (result === true) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/api/users/' + username + '/delete',
+                            success: function(data, status) {
+                                self.alert(data);
+                                var urlpath = window.location.pathname;
+                                window.location.pathname = urlpath;
+                            }
+                        });
+                    }
+                });
+        	});
+        },
+        confirm: function(question, callback) {
+        	var modal = $('#confirmModal')
+        	  , result = null;
+        	modal.on('show.bs.modal', function(event){
+        		modal.find('.modal-header h4').text('Confirm');
+        		modal.find('.modal-body').text(question);
+        		modal.find('.modal-footer .btn-primary').bind('click', function(){ result = true; modal.modal('hide'); });
+        		modal.find('.modal-footer .btn-danger').bind('click', function() { result = false; })
+        	});
+        	modal.bind('hidden.bs.modal', function(event){
+        		modal.find('.modal-footer .btn-primary').unbind('click');
+        		modal.find('.modal-footer .btn-danger').unbind('click');
+        		modal.unbind('hidden.bs.modal');
+        		callback(result);
+        	});
+        	modal.modal({'show':true});
+        },
+        alert: function(message) {
+        	var modal = $('#alertModal');
+        	modal.on('show.bs.modal', function(event) {
+        		modal.find('.modal-header h4').text('Alert');
+        		modal.find('.modal-body').text(message);
+        	});
+        	modal.modal({'show':true});
         }
     }
 }();

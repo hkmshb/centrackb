@@ -44,6 +44,21 @@ textarea {
     display: none;
 }
 
+.modal-sm {
+	width: 400px;
+}
+
+.modal-dialog .modal-header {
+	padding: 0px 10px;
+}
+.modal-dialog .modal-header h4 {
+	margin: 7px auto 5px;
+}
+.modal-dialog .modal-footer {
+	padding: 9px 10px 10px 10px;
+}
+
+
 input.input-validation-error {
     border: 1px solid #b94a48;
 }

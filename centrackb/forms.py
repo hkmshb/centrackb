@@ -5,7 +5,7 @@ from datetime import datetime
 from bottle import HTTPError
 from collections import OrderedDict
 
-from utils import get_session, Storage as _
+from utils import get_session, get_authnz, Storage as _
 from services import choices
 import db
 
@@ -362,3 +362,26 @@ class CaptureForm(FormBase):
             tags.append(tag.format(*args))
         return ''.join(tags)
 
+
+class UserForm(FormBase):
+    
+    def is_valid(self):
+        instance, fields = _(), ['username', 'email_addr', 'role']
+        for f in fields:
+            instance[f] = self.request.forms.get(f, '').strip()
+        
+        if not instance.role:
+            self.errors.append('User role is required.')
+        
+        self._instance = instance
+        return (len(self.errors) == 0)
+    
+    def save(self):
+        if not self._instance:
+            raise HTTPError(500, 'Invalid operation performed.')
+        
+        user = get_authnz().user(self._instance.username)
+        if user.role != self._instance.role:
+            user.update(role=self._instance.role)
+    
+    

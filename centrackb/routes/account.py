@@ -49,7 +49,10 @@ def register():
         form = RegisterForm(request, authnz)
         if form.is_valid():
             form.save()
-            session['pass'].append('Account created!')
+            session['pass'].append(
+                "Account has been created. However you'd have to wait on the "
+                "administrator to activate the account before you can use it."
+            )
             return redirect('/')
         else:
             session['fail'].extend(form.errors)

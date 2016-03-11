@@ -1,7 +1,7 @@
 ﻿"""
 Routes and views for admin access.
 """
-from bottle import HTTPError, post, route, request, redirect
+from bottle import HTTPError, post, route, request, redirect, HTTPResponse
 from requests import ConnectionError
 import pymongo
 
@@ -29,6 +29,59 @@ def index():
             'count_xforms': db.XForm.count(),
             'count_projects': db.Project.count()
         })
+    }
+
+
+@route('/admin/users/')
+@view('admin/users')
+@authorize(role='moderator')
+def users():
+    fields = ['username', 'role', 'email_addr', 'description']
+    def func_users():
+        for values in authnz.list_users():
+            row = zip(fields, values)
+            yield _(row)
+    
+    def func_pending():
+        for code in authnz._store.pending_registrations:
+            row = authnz._store.pending_registrations[code]
+            yield _(row)
+    
+    return {
+        'title': 'Users',
+        'records': func_users(),
+        'pending_records': func_pending()
+    }
+
+
+@route('/admin/users/<username>/', method=['GET', 'POST'])
+@view('admin/user-form')
+@authorize(role='moderator')
+def manage_user(username):
+    user = authnz.user(username)
+    if not user:
+        raise HTTPError(404, "User not found: %s" % username)
+    
+    session = get_session()['messages']
+    if request.method == 'POST':
+        form = forms.UserForm(request)
+        try:
+            if form.is_valid():
+                form.save()
+                session['pass'].append('User updated!')
+            else:
+                session['fail'].append(form.errors)
+            return redirect('/admin/users/')
+        except HTTPResponse:
+            raise
+        except Exception as ex:
+            session['fail'].append('User update failed. Error: %s' % str(ex))
+    
+    roles = sorted(list(authnz.list_roles()), key=lambda x: x[1], reverse=True)
+    return {
+        'title': 'User',
+        'user': user,
+        'roles': roles,
     }
 
 
@@ -316,3 +369,5 @@ def import_station(feeder_code):
     return {
         'title': 'Import Feeder Stations'
     }
+
+

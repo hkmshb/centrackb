@@ -2,7 +2,7 @@
 Routes for API access.
 """
 from datetime import datetime
-from bottle import route, request
+from bottle import route, request, HTTPError
 from utils import Storage as _
 
 import db, forms
@@ -95,6 +95,27 @@ def capture_update(record_type, record_id):
     }
     table.replace(record_id, capture_upd)
     return {'success':True, 'message':'Record updated!'}
+
+
+@route('/api/users/activate', method=['POST'])
+@authorize(role='moderator')
+def user_activate():
+    code = request.POST.get('registration-code', '')
+    try:
+        authnz.validate_registration(code)
+        return 'Account activation was successful!'
+    except Exception as ex:
+        return "Account activation failed. Error: %s" % str(ex)
+
+
+@route('/api/users/<username>/delete', method=['POST'])
+@authorize(role='moderator')
+def user_deletion(username):
+    try:
+        authnz.delete_user(username)
+        return 'Account deletion was successful!'
+    except Exception as ex:
+        return "Account deletion failed. Error: %s" % str(ex)
 
 
 def _collect_choices():

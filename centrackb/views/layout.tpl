@@ -89,6 +89,38 @@
         </footer>
     </div>
     
+    <div class="modals">
+        <div class="modal fade" tabindex="-1" id="confirmModal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Confirm</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Yes</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" id="alertModal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Alert</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-xdismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="/static/js/jquery-1.10.2.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/bootstrap-datepicker.min.js"></script>
