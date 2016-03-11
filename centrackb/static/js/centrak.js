@@ -28,13 +28,13 @@ handleCaptureFiltering = function() {
         if (entry !== undefined && entry !== "") {
             query += (fnames[fn] + "=" + entry + "&");
         }
-        
-        if (query.substr(-1) === '&' || query.substr(-1) === '?')
-        	query = loc.substring(0, query.length - 1);
-
-        var pathname = window.location.pathname;
-        window.location = pathname + '?' + encodeURI(query);
     }
+        
+    if (query.substr(-1) === '&' || query.substr(-1) === '?')
+    	query = query.substring(0, query.length - 1);
+    
+    var pathname = window.location.pathname;
+    window.location = pathname + '?' + encodeURI(query);
     return false;
 };
 handleCaptureExport = function() {
