@@ -32,6 +32,7 @@
                         <th>Code</th>
                         <th>Name</th>
                         <th>Rating</th>
+                        <th>Captures</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,11 +44,12 @@
                         </td>
                         <td>{{ s.name }}</td>
                         <td>{{ s.capacity }}KVA, {{ get_vratio_display(s.vratio) or ''}}</td>
+                        <td>{{ get_capture_count(s.code) }}</td>
                     </tr>
                     % end
                     % else:
                     <tr>
-                        <td colspan="4">No data available.</td>
+                        <td colspan="5">No data available.</td>
                     </tr>
                     % end
                 </tbody>

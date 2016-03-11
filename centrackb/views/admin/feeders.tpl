@@ -16,6 +16,7 @@
                         <th style="width:150px;">Voltage</th>
                         <th style="width:45%;">Name</th>
                         <th style="width:150px">Stations</th>
+                        <th style="width:150px">Captures</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -26,6 +27,7 @@
                         <td>{{ r.voltage }}KV</td>
                         <td>{{ r.name }}</td>
                         <td>{{ get_station_count(r.code) }}</td>
+                        <td>{{ get_capture_count(r.code.lower() + "_cf_KN") }}</td>
                         <td>
                             <a href="{{ '/admin/feeders/%s/edit' % r.code.lower() }}">
                                 <i class="glyphicon glyphicon-edit"></i>
@@ -34,7 +36,7 @@
                     </tr>
                     % end
                 % else:
-                    <tr><td colspan="5">No data available.</td></tr>
+                    <tr><td colspan="6">No data available.</td></tr>
                 % end
                 </tbody>
             </table>

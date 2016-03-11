@@ -167,6 +167,14 @@ class CaptureBase:
         return self.db\
                    .count({'_xform_id_string': ref_id})
 
+    def count_by_project(self, project_id):
+        return self.db\
+                   .count({'project_id': project_id})
+
+    def count_by_station(self, station_code):
+        return self.db\
+                   .count({'station': station_code})
+
     def get(self, _id):
         record = self.db.find_one({'_id': _id})
         return _(record or {})

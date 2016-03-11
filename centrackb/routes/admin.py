@@ -172,7 +172,8 @@ def feeders():
     return {
         'title': 'Feeders', 
         'records': feeders,
-        'get_station_count': db.Station.count_by_feeder
+        'get_station_count': db.Station.count_by_feeder,
+        'get_capture_count': db.Capture.count_by_project
     }
 
 
@@ -187,7 +188,8 @@ def feeder_view(code):
         'title': 'Feeder',
         'feeder': feeder,
         'stations': stations,
-        'get_vratio_display': _get_vratio_display
+        'get_vratio_display': _get_vratio_display,
+        'get_capture_count': db.Capture.count_by_station
     }
 
 
