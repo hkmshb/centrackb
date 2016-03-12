@@ -21,7 +21,30 @@ class FormBase:
         pass
 
 
-class RegisterForm(FormBase):
+class UserFormBase(FormBase):
+    
+    def _is_kedco_email(self, email):
+        if (email and email.endswith('@kedco.ng')):
+            names = email.split('@')[0]
+            name_parts = names.split('.')
+            if len(name_parts) == 2:
+                return (len(name_parts[0]) > 1 and len(name_parts[1]) > 1)
+        return False
+    
+    def _is_acceptable_username(self, username, email):
+        if username and self._is_kedco_email(email):
+            names = email.split('@')[0]
+            if username == names or username == names.replace('.', '_'):
+                return True
+            
+            name_parts = names.split('.')
+            for name in name_parts:
+                if username == name:
+                    return True
+        return False
+
+
+class RegisterForm(UserFormBase):
     
     def __init__(self, request, authnz):
         super(RegisterForm, self).__init__(request)
@@ -36,7 +59,7 @@ class RegisterForm(FormBase):
         if not self._required_fields_provided():
             return False
         
-        if self._username_in_user(self.username):
+        if self._username_in_use(self.username):
             self.errors.append('Username already in use.')
         elif not self._is_kedco_email(self.email):
             self.errors.append('KEDCO email expected.')
@@ -60,27 +83,7 @@ class RegisterForm(FormBase):
         
         return (len(self.errors) == 0)
     
-    def _is_kedco_email(self, email):
-        if (email and email.endswith('@kedco.ng')):
-            names = email.split('@')[0]
-            name_parts = names.split('.')
-            if len(name_parts) == 2:
-                return (len(name_parts[0]) > 1 and len(name_parts[1]) > 1)
-        return False
-    
-    def _is_acceptable_username(self, username, email):
-        if username and self._is_kedco_email(email):
-            names = email.split('@')[0]
-            if username == names or username == names.replace('.', '_'):
-                return True
-            
-            name_parts = names.split('.')
-            for name in name_parts:
-                if username == name:
-                    return True
-        return False
-    
-    def _username_in_user(self, username):
+    def _username_in_use(self, username):
         return (username in self.__authnz._store.users)
     
     def save(self):
@@ -102,6 +105,36 @@ class RegisterForm(FormBase):
             'creation_date': creation_date,
         }
         self.__authnz._store.save_pending_registrations()
+
+
+class UserForm(UserFormBase):
+    
+    def is_valid(self):
+        instance, fields = _(), ['username', 'email_addr', 'role']
+        for f in fields:
+            instance[f] = self.request.forms.get(f, '').strip()
+        
+        if not instance.email_addr:
+            self.errors.append('Email is required.')
+        elif not self._is_kedco_email(instance.email_addr):
+            self.errors.append('KEDCO email expected')
+        elif not self._is_acceptable_username(instance.username, instance.email_addr):
+            self.errors.append("Email doesn't match KEDCO email format.")
+        elif not instance.role:
+            self.errors.append('User role is required.')
+        
+        self._instance = instance
+        return (len(self.errors) == 0)
+    
+    def save(self):
+        if not self._instance:
+            raise HTTPError(500, 'Invalid operation performed.')
+        
+        user = get_authnz().user(self._instance.username)
+        if (user.role != self._instance.role or
+            user.email_addr != self._instance.email_addr): 
+            user.update(role=self._instance.role,
+                        email_addr=self._instance.email_addr)
 
 
 class ProjectForm(FormBase):
@@ -362,26 +395,3 @@ class CaptureForm(FormBase):
             tags.append(tag.format(*args))
         return ''.join(tags)
 
-
-class UserForm(FormBase):
-    
-    def is_valid(self):
-        instance, fields = _(), ['username', 'email_addr', 'role']
-        for f in fields:
-            instance[f] = self.request.forms.get(f, '').strip()
-        
-        if not instance.role:
-            self.errors.append('User role is required.')
-        
-        self._instance = instance
-        return (len(self.errors) == 0)
-    
-    def save(self):
-        if not self._instance:
-            raise HTTPError(500, 'Invalid operation performed.')
-        
-        user = get_authnz().user(self._instance.username)
-        if user.role != self._instance.role:
-            user.update(role=self._instance.role)
-    
-    

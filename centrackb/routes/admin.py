@@ -62,6 +62,10 @@ def manage_user(username):
     if not user:
         raise HTTPError(404, "User not found: %s" % username)
     
+    user_info = _(username=user.username,
+                  email_addr=user.email_addr,
+                  role=user.role)
+    
     session = get_session()['messages']
     if request.method == 'POST':
         form = forms.UserForm(request)
@@ -69,18 +73,24 @@ def manage_user(username):
             if form.is_valid():
                 form.save()
                 session['pass'].append('User updated!')
+                return redirect('/admin/users/')
             else:
                 session['fail'].append(form.errors)
-            return redirect('/admin/users/')
         except HTTPResponse:
             raise
         except Exception as ex:
             session['fail'].append('User update failed. Error: %s' % str(ex))
+            
+        # reflect/retain user changes
+        user_info.update({
+            'email_addr': request.forms.get('email_addr', ''),
+            'role': request.forms.get('role', ''),
+        })
     
     roles = sorted(list(authnz.list_roles()), key=lambda x: x[1], reverse=True)
     return {
         'title': 'User',
-        'user': user,
+        'user': user_info,
         'roles': roles,
     }
 

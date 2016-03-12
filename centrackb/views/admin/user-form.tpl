@@ -14,8 +14,8 @@
             <div class="form-group">
                 <label for="username" class="col-md-2 control-label">Email: </label>
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="email" required=""
-                           value="{{ user.email_addr or '' }}" readonly="" />
+                    <input type="email" class="form-control" name="email_addr" required=""
+                           value="{{ user.email_addr or '' }}" />
                 </div>
             </div>
             <div class="form-group">
