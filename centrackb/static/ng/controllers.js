@@ -3,7 +3,8 @@
 var appControllers = angular.module('centrakControllers', []);
 appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 	// global variables
-	$scope._local_scopes = {};
+    $scope._apiUrlPrefix = null;
+    $scope._local_scopes = {};
 	$scope._choices = null;
 	$scope._meta = null;
 	
@@ -15,6 +16,7 @@ appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 				var control = value.children[0].children[0]
 				  , id = control.getAttribute('value')
 				  , captureType = control.getAttribute('data-type');
+				
 				if (id === '') {
 					var out = angular.element('.r-view')
 					  , scope = $scope._local_scopes['extra'];
@@ -149,27 +151,25 @@ appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 	};
 	
 	$scope._getUrl = function(captureId, isFirst, captureType) {
+        if (isFirst)
+            return $scope._apiUrlPrefix + captureType + '/' + captureId + '/';
+        
 		var source = (captureType === 'duplicate'
 						? $scope.recordType
 						: $scope.recordType === 'captures' 
 							? 'updates' : 'captures');
 		
-		if (isFirst)
-			return '/api' + window.location.pathname;
-		
-		return ('/api/' + source + '/' + captureId + '/?record_only=true');
+		return ($scope._apiUrlPrefix + source + '/' + captureId + '/?record_only=true');
 	}
 		
 	angular.element(document).ready(function(){
-		var urlpaths = window.location.pathname.split('/')
-		  , captureId = urlpaths[2];
-		
+        $scope._apiUrlPrefix = angular.element('[name=_apiUrlPrefix]').attr('src');
+        $scope.recordType = angular.element('[name=_baseRecordType]').val();
+	    var captureId = angular.element('[name=_baseCaptureId]').val();
+	    
 		// bind pane controls
 		$scope.paneSetup();
-		
-		// display capture
-		$scope.recordType = urlpaths[1];
-		$scope.displayCapture(captureId, true);
+		$scope.displayCapture(captureId, true, $scope.recordType);
 	});
 	
 
@@ -220,7 +220,7 @@ appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 	buildUpdateUrl = function(scope) {
 		var part = scope.capture.project_id.indexOf('_cf_') !== -1
 						? 'captures': 'updates';
-		return '/api/' + part + '/' + scope.capture._id + '/update';
+		return $scope._apiUrlPrefix + part + '/' + scope.capture._id + '/update';
 	},
 	handleRSeqChanged = function(scope) { 
 		return function(newValue, oldValue) {

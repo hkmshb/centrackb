@@ -217,7 +217,8 @@ def capture_view(item_id):
     # retrieve updates
     qry_upd = {'rseq': r['record']['rseq']}
     cur = db.Update.query(paginate=False, **qry_upd)
-    r['updates'] = [_(item) for item in cur]    
+    r['updates'] = [_(item) for item in cur]
+    r['record_type'] = 'captures'
     return r
 
 
@@ -255,7 +256,7 @@ def update_view(item_id):
     
     cur = db.Update.query(paginate=False, **qr_dup)
     r['duplicates'] = [_(item) for item in cur]
-    
+    r['record_type'] = 'updates'
     return r
 
 

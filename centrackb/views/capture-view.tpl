@@ -1,4 +1,7 @@
 <div class="row" ng-controller="CaptureViewCtrl" style="min-height: 500px;">
+    <input type="hidden" name="_apiUrlPrefix" src="/api/" >
+    <input type="hidden" name="_baseCaptureId" value="{{ record._id }}">
+    <input type="hidden" name="_baseRecordType" value="{{ record_type }}">
     <div class="col-md-2 affix side-dash" style="padding-right: 30px">
         <h5 style="text-transform:uppercase; font-weight:bold;"> &nbsp; </h5>
         <div class="panel panel-default panel-compressed">
@@ -15,7 +18,7 @@
                         % for d in duplicates:
                         <li class="item">
                             <label for="id_{{ d._id }}">
-                                <input type="radio" id="id_{{ d._id }}" name="entry" data-type="duplicate" value="{{ d._id }}" /> {{ d.rseq }} 
+                                <input type="radio" id="id_{{ d._id }}" name="entry" data-type="duplicate" value="{{ d._id }}"> {{ d.rseq }} 
                             </label>
                         </li>
                         % end
@@ -28,7 +31,7 @@
                         % for u in updates:
                         <li class="item">
                             <label for="id_{{ u._id }}">
-                                <input type="radio" id="id_{{ u._id }}" name="entry" data-type="update" value="{{ u._id }}" /> {{ u.rseq }}
+                                <input type="radio" id="id_{{ u._id }}" name="entry" data-type="update" value="{{ u._id }}"> {{ u.rseq }}
                             </label>
                         </li>
                         % end

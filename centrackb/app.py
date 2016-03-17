@@ -34,6 +34,11 @@ def wsgi_app():
     app = MongoDbSetupMiddleware(app)
     return app
 
+
+# wsgi application object
+application = wsgi_app()
+
+
 if __name__ == '__main__':
     """
     expected command line arguments:
@@ -60,7 +65,7 @@ if __name__ == '__main__':
 
     # Starts a local test server.
     run_args = {
-        'app': wsgi_app(), 'server': 'wsgiref',
+        'app': application, 'server': 'wsgiref',
         'host': HOST, 'port': PORT }
 
     if '--reload' in argv:
