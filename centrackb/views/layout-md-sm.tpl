@@ -3,7 +3,7 @@
         {{!base}}
     </div>
     <div class="col-sm-3">
-        % include('calendar.tpl')
+        % include('calendar.tpl', ref_date=ref_date())
         % if defined('pane_block'):
             % pane_block()
         % end

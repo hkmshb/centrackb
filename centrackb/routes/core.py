@@ -27,7 +27,7 @@ def index():
     records = []
     projects = db.Project.get_all()
     ref_date = _get_ref_date()
-    wkdate_bounds = get_weekdate_bounds(ref_date)
+    wkdate_bounds = get_weekdate_bounds
 
     for p in projects:
         record = _(id=p.id, name=p.name)

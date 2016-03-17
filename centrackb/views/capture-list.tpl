@@ -8,7 +8,7 @@
         <div class="col-md-8"><span class="h4">{{ title }}</span></div>
         <div class="col-md-4">
             <form class="form-inline" method="get">
-                <div class="input-group pull-left" style="width:80%;">
+                <div class="input-group pull-right" style="width:80%;">
                     <input type="text" name="q" class="form-control" placeholder="Quick Search"
                            value="{{ search_text or '' }}" />
                     <div class="input-group-btn">
@@ -17,7 +17,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="pull-right">
+                <div class="pull-left">
                     <a href="#" name="export_csv" class="btn btn-default">Export</a>
                 </div>
             </form>
