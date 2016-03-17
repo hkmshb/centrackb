@@ -1,7 +1,7 @@
 <div class="jumbotron">
     <h1 class="pull-left">Project: Eagle Eye</h1>
-    % include('calendar-input.tpl')
-    % if ref_date != report_ref_date:
+    % include('calendar-input.tpl', ref_date=ref_date())
+    % if ref_date() != report_ref_date:
     <div style="margin-top: 65px">
         % include('calendar.tpl', calendar_class="coral", ref_date=report_ref_date, weekdate_bounds=report_weekdate_bounds)
     </div>
@@ -121,10 +121,10 @@
                     todayHighlight: true,           
                }).on('changeDate', function(e) {
                     var entry = e.format('yyyymmdd')
-                      , url = window.location.origin;
+                      , url = window.location.origin + window.location.pathname;
                     
                     if (entry !== "")
-                        url = url + '/?refdate=' + entry;
+                        url = url + '?refdate=' + entry;
                     window.open(url, target='_self');
                });
                

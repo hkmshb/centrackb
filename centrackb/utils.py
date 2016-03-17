@@ -12,8 +12,8 @@ import settings
 
 
 def view(tmpl_name):
-    ref_date = _get_ref_date()
-    wkdate_bounds = get_weekdate_bounds(ref_date)
+    ref_date = _get_tdy_date
+    wkdate_bounds = get_weekdate_bounds
 
     context = {
         'year': datetime.now().year,
@@ -41,6 +41,8 @@ def write_log(lines):
         print("LOG LINES:\r\n%s" % ('\t'.join(lines)))
         print()
 
+def _get_tdy_date():
+    return datetime.today().date()
 
 def _get_ref_date():
     try:
