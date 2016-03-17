@@ -82,6 +82,16 @@ input[type="checkbox"].input-validation-error {
     padding-bottom: 10px;
 }
 
+.datepicker table tr th,
+.datepicker table tr td {
+	width: 20px;
+	height: 20px;
+}
+
+table {
+	font-size: 13px;
+}
+
 .table-label {
     font-weight: normal;
     margin-top: -5px;
