@@ -77,16 +77,18 @@ App = function () {
             });
         },
         bindForUserManagement: function() {
-            var self = this;
+            var self = this
+              , _apiUrlPrefix = $('[name=_apiUrlPrefix]').attr('src');
             $('[name=activate_reg]').on('click', function() {
                 var code = $(this).data('registration-code')
                   , msg = 'Are you sure you want to activate this registration?'; 
         		
+                alert(_apiUrlPrefix);
                 self.confirm(msg, function(result) {
                     if (result === true) {
         				$.ajax({
         					type: 'POST',
-        					url: '/api/users/activate',
+        					url: _apiUrlPrefix + 'users/activate',
         					data: {'registration-code': code},
         					success: function(data, status) {
         					    self.alert(data);
@@ -110,7 +112,7 @@ App = function () {
                     if (result === true) {
                         $.ajax({
                             type: 'POST',
-                            url: '/api/users/' + username + '/delete',
+                            url: _apiUrlPrefix + 'users/' + username + '/delete',
                             success: function(data, status) {
                                 self.alert(data);
                                 var urlpath = window.location.pathname;

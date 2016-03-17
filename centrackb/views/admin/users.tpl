@@ -77,6 +77,7 @@
             </table>
         </div>
     </div>
+    <input type="hidden" name="_apiUrlPrefix" src="/api/" >
 </form>
 % def scripts():
     <script type="text/javascript">
