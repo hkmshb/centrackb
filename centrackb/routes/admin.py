@@ -4,6 +4,7 @@ Routes and views for admin access.
 from bottle import HTTPError, post, route, request, redirect, HTTPResponse
 from requests import ConnectionError
 import pymongo
+import logging
 
 from utils import view, get_session, Storage as _
 from routes import authnz, authorize
@@ -92,7 +93,7 @@ def manage_user(username):
         'title': 'User',
         'user': user_info,
         'roles': roles,
-        'redirect_url': ('/admin/users/%s/' % username)
+        'readonly': False,
     }
 
 
@@ -117,32 +118,25 @@ def change_user_password(username):
     
     # go ahead and make za change...
     session = get_session()['messages']
-    
-    password = request.forms.get('password').strip()
-    confirm_password = request.forms.get('confirm_password').strip()
-    redirect_url = request.forms.get('redirect_url')
-    
-    if not password:
-        session['fail'].append('Password is required.')
-        return redirect(redirect_url)
-    elif password != confirm_password:
-        session['fail'].append('Provided passwords do not match.')
-        return redirect(redirect_url)
-    
-    # password strength checks
-    if len(password) < 6:
-        session['fail'].append('Password must be at length 6 characters long.')
-        return redirect(redirect_url)
-    
-    # effect password change
-    user.update(pwd=password)
-    
-    session['pass'].append('Password has been changed successfully.')
-    # end session if password changed for current user
-    if authd_user.username == user.username:
-        get_session().invalidate()
-    
-    return redirect(redirect_url)
+    form = forms.PasswordChangeForm(request, user)
+    try:
+        if form.is_valid():
+            form.save()
+            session['pass'].append('Password has been changed successfully.')
+            
+            # end session if password changed for current user
+            if authd_user.username == user.username:
+                return authnz.logout(success_redirect=('/admin/users/%s/' % username))
+        else:
+            session['fail'].append(form.errors)
+    except HTTPResponse:
+        raise
+    except Exception as ex:
+        error_message = 'Password change failed. Error: %s' % str(ex)
+        session['fail'].append(error_message)
+        logging.error(error_message, exc_info=True)
+        
+    return redirect('/admin/users/%s/' % username)
 
 
 @route('/admin/projects/')

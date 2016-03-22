@@ -137,6 +137,31 @@ class UserForm(UserFormBase):
                         email_addr=self._instance.email_addr)
 
 
+class PasswordChangeForm(FormBase):
+    
+    def __init__(self, request, user):
+        super(PasswordChangeForm, self).__init__(request)
+        self._user = user
+    
+    def is_valid(self):
+        obj, fields = _(), ['password', 'confirm_password']
+        for f in fields:
+            obj[f] = self.request.forms.get(f, '').strip()
+        
+        if not obj.password:
+            self.errors.append('Password is required.')
+        elif obj.password != obj.confirm_password:
+            self.errors.append('Provided passwords do not match.')
+        elif len(obj.password) < 6:
+            self.errors.append('Password must be at least 6 characters long.')
+        
+        self._obj = obj
+        return (len(self.errors) == 0)
+    
+    def save(self):
+        self._user.update(pwd=self._obj.password)
+    
+
 class ProjectForm(FormBase):
     
     def is_valid(self):

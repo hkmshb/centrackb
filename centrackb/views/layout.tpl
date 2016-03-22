@@ -42,14 +42,14 @@
                         <li class="separator"><span href="#">|</span></li>
                         <li><a href="/register">Register</a></li>
                     % else:
-                        <li><a href="#">
+                        <li><a href="/profile">
                                 <i class="glyphicon glyphicon-user"></i>
                                 {{ authnz.current_user.username }}
                             </a>
                         </li>
                         <li class="separator"><span href="#">|</span></li>
                         <li><a href="/logout">Log Out</a></li>
-                    % end                    
+                    % end
                     </ul>
                 </div>
             </div>

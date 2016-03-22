@@ -5,7 +5,7 @@ import sys
 import logging
 from datetime import datetime, date
 from bottle import HTTPError, post, route, request, response, redirect,\
-     error, static_file, view as viewb
+     error, static_file, view as viewb, HTTPResponse
 from requests.exceptions import ConnectionError
 
 import db
@@ -14,7 +14,7 @@ from utils import get_session, write_log, get_weekdate_bounds, view,\
 from services import api, choices, stats, transform, report
 from settings import FMT_SHORTDATE, NL_PAGE_SIZE
 from routes import authnz, authorize
-from forms import CaptureForm
+from forms import CaptureForm, PasswordChangeForm
 
 
 _PROJECTS_CHOICES_CACHE = None
@@ -56,6 +56,42 @@ def index():
         'activity_stats': activity_stats,
         'report_ref_date': ref_date,
         'report_weekdate_bounds': wkdate_bounds,
+    }
+
+@route('/profile', method=['GET', 'POST'])
+@view('profile')
+@authorize()
+def profile():
+    user = authnz.current_user
+    user_info = _(username=user.username,
+                  email_addr=user.email_addr,
+                  role=user.role)
+    
+    session = get_session()['messages']
+    if request.method == 'POST':
+        form = PasswordChangeForm(request, user)
+        try:
+            if form.is_valid():
+                form.save()
+                session['pass'].append('Password has been changed successfully.')
+                return authnz.logout(success_redirect='/profile')
+            else:
+                session['fail'].append(form.errors)
+        except HTTPResponse:
+            raise
+        except Exception as ex:
+            error_message = 'Password change failed. Error: %s' % str(ex)
+            session['fail'].append(error_message)
+            logging.error(error_message, exc_info=True)
+    
+    roles = sorted(
+        list(authnz.list_roles()),
+        key=lambda x: x[1], reverse=True)
+    return {
+        'title': 'Profile',
+        'user': user_info,
+        'roles': roles,
+        'readonly': True,
     }
 
 
