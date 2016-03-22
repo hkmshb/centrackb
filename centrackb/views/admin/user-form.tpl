@@ -4,6 +4,7 @@
     </div>
     <div class="panel-body">
         <form method="post" class="form-horizontal">
+            <input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
             <div class="form-group">
                 <label for="username" class="col-md-2 control-label">Username: </label>
                 <div class="col-md-6">
@@ -36,5 +37,43 @@
             </div>
         </form>
     </div>
-</div
-%rebase('admin/base.tpl', title=title, year=year)
+</div>
+
+<div class="panel panel-warning">
+    <div class="panel-heading">
+        <b>Change Password</b>
+    </div>
+    <div class="panel-body">
+        <form id="form-pwd" method="post" action="change_password" class="form-horizontal">
+            <input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
+            <div class="form-group">
+                <label for="password" class="col-md-2 control-label">Password: </label>
+                <div class="col-md-6">
+                    <input type="password" name="password" class="form-control" required=""  />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password" class="col-md-2 control-label">Confirm Password: </label>
+                <div class="col-md-6">
+                    <input type="password" name="confirm_password" class="form-control" required="" 
+                           data-rule-equalto="[name=password]"  />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button type="submit" class="btn btn-warning">Change</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+% def ex_scripts():
+    <script type="text/javascript">
+        (function($) {
+            $(function() {
+                $('#form-pwd').validate();
+            });
+        })(jQuery);
+    </script>
+% end
+%rebase('admin/base.tpl', title=title, year=year, extra_scripts=ex_scripts)

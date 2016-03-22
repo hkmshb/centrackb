@@ -122,6 +122,7 @@
     </div>
     
     <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/jquery.validate.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/bootstrap-datepicker.min.js"></script>
     <script src="/static/js/select2.full.min.js"></script>

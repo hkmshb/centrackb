@@ -92,7 +92,57 @@ def manage_user(username):
         'title': 'User',
         'user': user_info,
         'roles': roles,
+        'redirect_url': ('/admin/users/%s/' % username)
     }
+
+
+@route('/admin/users/<username>/change_password', method=['POST'])
+@authorize()
+def change_user_password(username):
+    user = authnz.user(username)
+    if not user:
+        raise HTTPError(404, "User not found: %s" % username)
+    
+    # moderators should not be able to change the admin's password
+    authd_user = authnz.current_user
+    if authd_user.role in ('admin', 'moderator'):
+        if authd_user.role == 'moderator' and user.role == 'admin':
+            return redirect('/restricted')
+    
+    # non-admin and non-moderators should only be able to change their own
+    # password
+    elif authd_user.role not in ('admin', 'moderator'):
+        if authd_user.username != user.username:
+            return redirect('/restricted')
+    
+    # go ahead and make za change...
+    session = get_session()['messages']
+    
+    password = request.forms.get('password').strip()
+    confirm_password = request.forms.get('confirm_password').strip()
+    redirect_url = request.forms.get('redirect_url')
+    
+    if not password:
+        session['fail'].append('Password is required.')
+        return redirect(redirect_url)
+    elif password != confirm_password:
+        session['fail'].append('Provided passwords do not match.')
+        return redirect(redirect_url)
+    
+    # password strength checks
+    if len(password) < 6:
+        session['fail'].append('Password must be at length 6 characters long.')
+        return redirect(redirect_url)
+    
+    # effect password change
+    user.update(pwd=password)
+    
+    session['pass'].append('Password has been changed successfully.')
+    # end session if password changed for current user
+    if authd_user.username == user.username:
+        get_session().invalidate()
+    
+    return redirect(redirect_url)
 
 
 @route('/admin/projects/')
