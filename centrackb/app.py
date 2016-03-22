@@ -3,6 +3,9 @@ This script runs the application using a development server.
 """
 import os
 import sys
+import logging
+import logging.config
+
 import bottle
 from beaker.middleware import SessionMiddleware
 
@@ -14,11 +17,18 @@ from utils import MongoDbSetupMiddleware
 from routes import *
 
 
-argv = sys.argv[1:]
-if '--debug' in argv or 'SERVER_DEBUG' in os.environ:
-    # Debug mode will enable more verbose output in the console window.
-    # It must be set at the beginning of the script.
-    bottle.debug(True)
+
+def setup_logging():
+    log_conf = os.path.join(settings.BASE_DIR, '..', 'centrackb.json')
+    if os.path.exists(log_conf):
+        import json
+        
+        with open(log_conf, 'rt') as f:
+            config = json.load(f)
+        logging.config.dictConfig(config['logging'])
+    else:
+        logging.basicConfig(level=logging.INFO)
+
 
 def wsgi_app():
     """Returns the application to make available through wfastcgi. This is used
@@ -35,8 +45,16 @@ def wsgi_app():
     return app
 
 
-# wsgi application object
+# startup config
 application = wsgi_app()
+setup_logging()
+
+
+argv = sys.argv[1:]
+if '--debug' in argv or 'SERVER_DEBUG' in os.environ:
+    # Debug mode will enable more verbose output in the console window.
+    # It must be set at the beginning of the script.
+    bottle.debug(True)
 
 
 if __name__ == '__main__':
