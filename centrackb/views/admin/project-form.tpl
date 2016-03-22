@@ -13,8 +13,8 @@
             <div class="form-group">
                 <label for="name" class="col-md-2 control-label">Name: </label>
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="name" required="requred"
-                           value="{{ project.name or '' }}" />                    
+                    <input type="text" class="form-control" name="name" required="required"
+                           value="{{ project.name or '' }}" /> 
                 </div>
             </div>
             <div class="form-group">
@@ -39,6 +39,15 @@
                         <option value="{{ f.id_string }}" {{ on }}>{{ f.title }}</option>
                     % end
                     </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="is_active" class="col-md-2 control-label">Active: </label>
+                <div class="col-md-6">
+                    <label name="is_active">
+                        <input type="checkbox" name="active" class="form-control"
+                               {{'checked=""' if project.active == True else '' }} />
+                    </label>
                 </div>
             </div>
             <div class="form-group">

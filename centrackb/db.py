@@ -52,7 +52,6 @@ class Project:
     @staticmethod
     def insert_one(record):
         tdy = datetime.today().date().isoformat()
-        record['active'] = True
         record['date_created'] = tdy
         record['last_modified'] = None
         return db.projects\

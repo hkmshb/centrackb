@@ -145,6 +145,7 @@ class ProjectForm(FormBase):
         name = self.request.forms.get('name', '').strip()
         xforms = self.request.forms.getall('xforms')
         uforms = self.request.forms.getall('uforms')
+        active = self.request.forms.get('active', False) == 'on'
 
         if not id:
             self.errors.append('Project Id required')
@@ -155,7 +156,8 @@ class ProjectForm(FormBase):
 
         self._instance = _(
             _id=_id, id=id, name=name, 
-            xforms=xforms, uforms=uforms
+            xforms=xforms, uforms=uforms,
+            active=active
         )
         return True
 
