@@ -2,6 +2,7 @@
 Routes and views for the bottle application.
 """
 import sys
+import logging
 from datetime import datetime, date
 from bottle import HTTPError, post, route, request, response, redirect,\
      error, static_file, view as viewb
@@ -136,6 +137,7 @@ def project_sync(project_id):
         try:
             transformed, pull_count = [], 0
             for captures in api.get_captures(xform.id, start=count):
+                logging.debug('# captures pulled: %s', len(captures))
                 if captures:
                     pull_count += len(captures)
                     for c in captures:
@@ -149,6 +151,7 @@ def project_sync(project_id):
             messages['fail'].append('Sync failed. Internet connection required.')
         except Exception as ex:
             messages['fail'].append('Sync failed. %s' % str(ex))
+            logging.error('sync failed. %s', str(ex), exc_info=True)
 
     return redirect('/projects/%s/' % project_id)
 

@@ -125,9 +125,19 @@ def to_flatten_dict(entry):
     
     # add new entries
     ## set project_id
-    parts = target['_xform_id_string'].split('_')
-    xform_id = '%s_%s_%s' % (parts[0], parts[1][:2],  parts[2])
-    target['project_id'] = xform_id
+    # HACK: treats Hotoro 11KV feeder entries with special care
+    _xform_id_str = target['_xform_id_string']
+    if _xform_id_str.startswith('cust'):
+        if _xform_id_str.startswith('custform0'):
+            target['project_id'] = 'f13e_cf_KN'
+        else:
+            target['project_id'] = 'f13e_cu_KN'
+        
+        target['enum_id'] = 'X/4Q2015'
+    else:
+        parts = _xform_id_str.split('_')
+        xform_id = '%s_%s_%s' % (parts[0], parts[1][:2],  parts[2])
+        target['project_id'] = xform_id
     
     ## more entries
     target['group'] = target['enum_id'][0]

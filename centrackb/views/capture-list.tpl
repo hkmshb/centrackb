@@ -1,6 +1,6 @@
 % f = lambda x: x or '-'
 % enum = lambda x: '%s<b> / </b>%s' % (x[0], x[2:].title())
-% addy = lambda x: '' if x.upper() in ['NA','N/A'] else x
+% addy = lambda x: '' if (x or '').upper() in ['NA','N/A'] else (x or '')
 % shorten = lambda x: x if x=='-' or len(x) < 22 else x[:22]+'...'
 
 <div class="form-search">

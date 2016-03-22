@@ -110,8 +110,13 @@ class XForm:
         uforms = []
         for p in Project.get_all(paginate=False):
             uforms.extend(p['uforms'])
-
-        qry = {'id': {'$nin': uforms}, 'id_string': {'$regex': 'f[0-9]{3}_cu.+'}}
+        
+        # HACK: included the cust_updform regex pattern to support update
+        # forms used for Hotoro 11KV Feeder...
+        qry = {
+            'id': {'$nin': uforms}, 
+            'id_string': {'$regex': '(f[0-9]{3}_cu.+|cust_updform.+)'}
+        }
         if not include_inactive:
             qry.update({'active': True})
 
