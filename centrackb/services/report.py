@@ -1,16 +1,13 @@
 ﻿import os
+import csv
 import pandas as pd
 from datetime import datetime
 
 import db
 from services import stats
-from settings import BASE_DIR, DUMP_DIR, report_cols
+from settings import BASE_DIR, REPORTS_DIR, report_cols
 
 
-
-REPORT_DIR = os.path.join(DUMP_DIR, '_reports')
-if not os.path.exists(REPORT_DIR):
-    os.makedirs(REPORT_DIR)
 
 
 def _norm(df):
@@ -127,7 +124,7 @@ def write_report(project_id, ref_date):
 
     date_digits = ref_date.replace('-','')
     fname = 'activity-report-%s.xls' % date_digits
-    fpath = os.path.join(REPORT_DIR, fname)
+    fpath = os.path.join(REPORTS_DIR, fname)
     writer = pd.ExcelWriter(fpath)
 
     try:
@@ -177,5 +174,32 @@ def write_report(project_id, ref_date):
                 gf.to_excel(writer, 'group-%s-%s' % (key.lower(), date_digits))
     finally:
         writer.save()
-    return (fname, REPORT_DIR)
+    return (fname, REPORTS_DIR)
 
+
+def export_captures_to_csv(filename, records):
+    extract = lambda r: {k: r.get(k, '-') for k in report_cols}
+    filepath = os.path.join(REPORTS_DIR, filename)
+    
+    dialect = csv.excel
+    dialect.lineterminator ='\r'
+    
+    with open(filepath, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=report_cols, dialect=dialect)
+        writer.writeheader()
+        
+        for record in records:
+            writer.writerow(extract(record))
+        
+        f.flush()
+
+
+def export_captures_to_xls(filename, records):
+    def get_as_dict(rows):
+        for r in rows:
+            yield {k: r.get(k, '-') for k in report_cols}
+    
+    filepath = os.path.join(REPORTS_DIR, filename)
+    df = pd.DataFrame(get_as_dict(records))
+    df.to_excel(filepath, na_rep='-', columns=report_cols)
+    

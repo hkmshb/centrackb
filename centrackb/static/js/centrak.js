@@ -37,18 +37,20 @@ handleCaptureFiltering = function() {
     window.location = pathname + '?' + encodeURI(query);
     return false;
 },
-handleCaptureExport = function() {
+handleCaptureExport = function(format) {
 	var urlpath = window.location.toString()
 	  , pathname = window.location.pathname
-	  , urlpaths = urlpath.split('?')
-	  , format = 'format=csv';
+	  , urlpaths = urlpath.split('?');
 	
 	var target_url = '/export' + pathname;
-	if (urlpaths.length === 1)
+	if (urlpaths.length === 1) {
 		target_url += ('?' + format);
-	else
-		target_url += ('?' + urlpaths[1] + '&' + format);
-	
+	} else {
+	    var tmp = urlpaths[1];
+	    if (tmp.substr(-1) === '#')
+	        tmp = tmp.substring(0, tmp.length - 1);
+		target_url += ('?' + tmp + '&' + format);
+	}
 	window.location = target_url;
 	return false;
 },
@@ -67,14 +69,17 @@ App = function () {
             handleThemePanelExpand()
         },
         filterCapture: function() { 
-            $('[name=filter]').on('click', function () {
+            $('[name=filter]').bind('click', function () {
                 return handleCaptureFiltering();
             });
         },
         exportCapture: function() {
-            $('[name=export_csv]').on('click', function() {
-                return handleCaptureExport();
+            $('[name=export_csv]').bind('click', function() {
+                return handleCaptureExport('format=csv');
             });
+            $('[name=export_xls]').bind('click', function() {
+                return handleCaptureExport('format=xls');
+            })
         },
         bindForUserManagement: function() {
             var self = this

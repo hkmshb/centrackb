@@ -8,7 +8,7 @@
         <div class="col-md-8"><span class="h4">{{ title }}</span></div>
         <div class="col-md-4">
             <form class="form-inline" method="get">
-                <div class="input-group pull-right" style="width:80%;">
+                <div class="input-group pull-right" style="width:75%;">
                     <input type="text" name="q" class="form-control" placeholder="Quick Search"
                            value="{{ search_text or '' }}" />
                     <div class="input-group-btn">
@@ -18,7 +18,19 @@
                     </div>
                 </div>
                 <div class="pull-left">
-                    <a href="#" name="export_csv" class="btn btn-default">Export</a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Export <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" name="export_xls">
+                                    <i class="glyphicon glyphicon-list"></i> &nbsp; Excel File (.xls)
+                                </a></li>
+                            <li><a href="#" name="export_csv">
+                                    <i class="glyphicon glyphicon-file"></i> &nbsp; CSV File (.csv)
+                                </a></li>
+                        </ul>
+                    </div>
                 </div>
             </form>
         </div>

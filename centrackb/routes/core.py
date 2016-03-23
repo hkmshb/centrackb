@@ -1,6 +1,7 @@
 ﻿"""
 Routes and views for the bottle application.
 """
+import os
 import sys
 import logging
 from datetime import datetime, date
@@ -13,7 +14,7 @@ import utils
 from utils import get_session, write_log, get_weekdate_bounds, view,\
      _get_ref_date, Storage as _
 from services import api, choices, stats, transform, report
-from settings import FMT_SHORTDATE, NL_PAGE_SIZE
+from settings import FMT_SHORTDATE, NL_PAGE_SIZE, REPORTS_DIR
 from routes import authnz, authorize
 from forms import CaptureForm, PasswordChangeForm
 
@@ -301,36 +302,30 @@ def update_view(item_id):
 @route('/export/<record_type:re:(captures|updates)>/')
 @view('export_result')
 def export_captures(record_type):
-    import os, csv
-    from settings import REPORTS_DIR, report_cols
+    export_format = request.query.get('format', 'csv')
     
     table = (db.Capture if record_type == 'captures' else db.Update)
     resp = _query_capture(table, None, None, False)
     
-    filename = '%s-export@%s.csv' % (record_type, datetime.today().strftime('%Y%m%dT%H%M'))
-    filepath = os.path.join(REPORTS_DIR, filename)
-    extract = lambda r: {k: r.get(k, '-') for k in report_cols}
-    
-    dialect = csv.excel
-    dialect.lineterminator = '\r'
+    timestamp = datetime.today().strftime('%Y%m%dT%H%M')
+    filename = '%s-export@%s.%s' % (record_type, timestamp, export_format)
     
     status, error = 'Unknown', ''
     try:
-        with open(filepath, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=report_cols, dialect=dialect)
-            writer.writeheader()
-            for record in resp['records']:
-                writer.writerow(extract(record))
-            
-            csvfile.flush()
-            status = 'Success'
+        func = getattr(report, 'export_captures_to_%s' % export_format)
+        if not func:
+            raise Exception('Export type (%s) not supported.' % export_format)
         
+        func(filename, resp['records'])
+        status = 'Success'
         return static_file(filename, root=REPORTS_DIR, download=True)
     except Exception as ex:
         logging.error('Export failed. Error: %s', str(ex), exc_info=True)
+        filepath = os.path.join(REPORTS_DIR, filename)
         os.remove(filepath)
         status = 'Failed'
         error = str(ex)
+        
     return {
         'title': 'Export Result', 'status': status, 
         'filename': filename, 'error': error
