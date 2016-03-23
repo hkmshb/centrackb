@@ -336,7 +336,7 @@ def _query_capture(tbl, title, item_id, paginate=True):
     if not item_id:
         # handle query parameters here
         query, sorts, q = {}, {}, request.query.get('q')
-        duplicate_field = None
+        show_only_field = None
         if q:
             search = {'$regex': '.*%s.*' % q, '$options':'i'}
             query = {'$or': [
@@ -353,15 +353,15 @@ def _query_capture(tbl, title, item_id, paginate=True):
             query = {}
             filter_fields = ['datetime_today','enum_id','rseq','acct_status',
                              'acct_no', 'meter_status','meter_type',
-                             'project_id', 'show_duplicate']
+                             'project_id', 'show_only']
             
             for f in filter_fields:
                 entry = request.query.get(f, None)
                 if entry:
-                    if f != 'show_duplicate':
+                    if f != 'show_only':
                         query[f] = {'$regex': '.*%s.*' % entry, '$options':'i'}
                     else:
-                        duplicate_field = entry
+                        show_only_field = entry
             
             sort_fields = ['sort_by', 'then_by']
             for sf in sort_fields:
@@ -371,12 +371,12 @@ def _query_capture(tbl, title, item_id, paginate=True):
 
         # data to retrieve
         page = tbl.query(paginate=paginate, sort_by=list(sorts.values()), 
-                         duplicate_field=duplicate_field, **query)
+                         show_only_field=show_only_field, **query)
         
         # update so filter_query form state is restored
         query.update(sorts)
-        if duplicate_field:
-            query['show_duplicate'] = duplicate_field
+        if show_only_field:
+            query['show_only'] = show_only_field
             
         # extract project choices
         if not utils._PROJECTS_CHOICES_CACHE:
@@ -384,7 +384,6 @@ def _query_capture(tbl, title, item_id, paginate=True):
             for p in db.Project.get_all(False, paginate=False):
                 project_choices.append((p['id'], p['name']))
             utils._PROJECTS_CHOICES_CACHE = project_choices
-        
         
         return {
             'title': title,
@@ -396,8 +395,8 @@ def _query_capture(tbl, title, item_id, paginate=True):
             'meter_type_choices': choices.METER_TYPE,
             'meter_status_choices': choices.METER_STATUS,
             'tariff_choices': choices.TARIFF,
-            'duplicate_choices': choices.DUPLICATES,
             'project_choices': utils._PROJECTS_CHOICES_CACHE,
+            'capture_category_choices': choices.CAPTURE_CATEGORIES,
         }
     else:
         query = {}

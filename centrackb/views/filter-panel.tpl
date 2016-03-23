@@ -89,12 +89,12 @@
             
             <div class="divider"></div>
             <div class="row m-t-10">
-                <div class="col-md-5 control-label">Show Duplicate</div>
+                <div class="col-md-5 control-label">Show Only</div>
                 <div class="col-md-7">
-                    <select name="show_duplicate" class="form-control input-sm">
+                    <select name="show_only" class="form-control input-sm">
                         <option value="">&laquo; Select One &raquo;</option>
-                    % for (key, value) in duplicate_choices:
-                        <option value="{{ key }}" {{! selected2(q.show_duplicate, key) }}>{{ value }}</option>
+                    % for (key, value) in capture_category_choices:
+                        <option value="{{ key }}" {{! selected2(q.show_only, key) }}>{{ value }}</option>
                     % end
                     </select>
                 </div>

@@ -212,8 +212,19 @@ class CaptureBase:
                   .sort('date_created', pymongo.DESCENDING)
         return utils.paginate(cur) if paginate else cur
     
+    def get_available_updates(self, field, **params):
+        from copy import deepcopy
+        qry = ({} if not params else deepcopy(params))
+        if 'project_id' in qry:
+            value = qry['project_id']['$regex']
+            qry['project_id']['$regex'] = value.replace('_cf_', '_cu_')
+        
+        cur = db.updates.find(qry, {'rseq': 1})
+        rseqs = [r['rseq'] for r in cur]
+        return rseqs
+    
     def get_duplicates(self, field, **params):
-        qry = ({} if not params else params)
+        qry = ({} if not params else params.copy())
         if field == 'acct_no':
             qry.update({'acct_no': {'$ne': None}})
             
@@ -232,7 +243,7 @@ class CaptureBase:
         self.db.update({'_id': record_id}, new_record)
     
     def query(self, project_id=None, form_id=None, include_dropped=False,
-                paginate=True, sort_by=None, duplicate_field=None, **params):
+                paginate=True, sort_by=None, show_only_field=None, **params):
         qry = {}
         if project_id:
             qry.update({'project_id': project_id})
@@ -244,18 +255,34 @@ class CaptureBase:
             qry.update(params)
         
         # check if to restrict filter to duplicates only
-        if duplicate_field:
+        if show_only_field:
             # note: showing dropped records only does and doesn't qualify as 
             # duplicate records depending on how you think about it... In this
             # case we consider all records marked as dropped as duplicate and
             # it helps answer the question 'what records have been dropped?'
-            if duplicate_field == 'dropped':
-                qry.update({duplicate_field: True})
+            if show_only_field == 'dropped':
+                qry.update({show_only_field: True})
+                
+                # if query already contain references to dropped records
+                # purge that and have just this criteria included... 
                 if qry.get('$or') and 'dropped' in str(qry.get('$or')):
                     del qry['$or']
+            elif show_only_field == 'updated':
+                qry.update({
+                    'last_updated': {'$exists': 1}, 
+                    'last_updated': {'$ne': None}
+                })
+            elif show_only_field == 'with-updates':
+                # setup a mumbo-jumbo non-record returning query if the query
+                # is run against the captures update table
+                if self._collection_name == 'updates':
+                    qry = {'rseq': '~!@#$%^&*()_+'}
+                else:
+                    _rseqs = self.get_available_updates(show_only_field, **qry)
+                    qry.update({'rseq': {'$in': _rseqs}})
             else:
-                duplicates = self.get_duplicates(duplicate_field, **qry)
-                qry = {duplicate_field: {'$in': duplicates[1]}}
+                duplicates = self.get_duplicates(show_only_field, **qry)
+                qry = {show_only_field: {'$in': duplicates[1]}}
         
         cur = self.db.find(qry)
         if not sort_by:

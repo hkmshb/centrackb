@@ -20,7 +20,7 @@ handleActivitySummaryRowToggle = function() {
 handleCaptureFiltering = function() {
     var query = "", entry = ""
       , fnames = ['datetime_today', 'enum_id', 'rseq', 'acct_status', 'acct_no',
-                  'meter_status', 'meter_type', 'project_id', 'show_duplicate', 
+                  'meter_status', 'meter_type', 'project_id', 'show_only', 
                   'sort_by', 'then_by'];
     
     for (fn in fnames) {

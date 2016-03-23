@@ -1,7 +1,9 @@
-DUPLICATES = (
-    ('rseq',    'Route Sequence'),
-    ('acct_no', 'Account Number'),
-    ('dropped', 'Dropped Captures')
+CAPTURE_CATEGORIES = (
+    ('rseq',    'Duplicate Route Sequence'),
+    ('acct_no', 'Duplicate Account Number'),
+    ('with-updates', 'Entries With Updates'),
+    ('updated', 'Updated Captures'),
+    ('dropped', 'Dropped Captures'),
 )
 
 ACCT_STATUS = (
