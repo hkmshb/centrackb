@@ -9,7 +9,7 @@ import logging
 from utils import view, get_session, Storage as _
 from routes import authnz, authorize
 from services import api, imxport
-import db, forms
+import db, forms, utils
 
 
 
@@ -179,6 +179,9 @@ def manage_project(id=None):
                 form.save()
                 action = ('created' if not id else 'updated')
                 session['messages']['pass'].append('Project %s' % action)
+                
+                # HACK: clear cache used by capture/update listing
+                utils._PROJECTS_CHOICES_CACHE = None
             else:
                 session['messages']['fail'].extend(form.errors)
 

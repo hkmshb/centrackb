@@ -9,6 +9,7 @@ from bottle import HTTPError, post, route, request, response, redirect,\
 from requests.exceptions import ConnectionError
 
 import db
+import utils
 from utils import get_session, write_log, get_weekdate_bounds, view,\
      _get_ref_date, Storage as _
 from services import api, choices, stats, transform, report
@@ -16,8 +17,6 @@ from settings import FMT_SHORTDATE, NL_PAGE_SIZE
 from routes import authnz, authorize
 from forms import CaptureForm, PasswordChangeForm
 
-
-_PROJECTS_CHOICES_CACHE = None
 
 
 @route('/')
@@ -328,6 +327,7 @@ def export_captures(record_type):
         
         return static_file(filename, root=REPORTS_DIR, download=True)
     except Exception as ex:
+        logging.error('Export failed. Error: %s', str(ex), exc_info=True)
         os.remove(filepath)
         status = 'Failed'
         error = str(ex)
@@ -384,12 +384,11 @@ def _query_capture(tbl, title, item_id, paginate=True):
             query['show_duplicate'] = duplicate_field
             
         # extract project choices
-        global _PROJECTS_CHOICES_CACHE
-        if not _PROJECTS_CHOICES_CACHE:
+        if not utils._PROJECTS_CHOICES_CACHE:
             project_choices = []
             for p in db.Project.get_all(False, paginate=False):
                 project_choices.append((p['id'], p['name']))
-            _PROJECTS_CHOICES_CACHE = project_choices
+            utils._PROJECTS_CHOICES_CACHE = project_choices
         
         
         return {
@@ -403,7 +402,7 @@ def _query_capture(tbl, title, item_id, paginate=True):
             'meter_status_choices': choices.METER_STATUS,
             'tariff_choices': choices.TARIFF,
             'duplicate_choices': choices.DUPLICATES,
-            'project_choices': _PROJECTS_CHOICES_CACHE,
+            'project_choices': utils._PROJECTS_CHOICES_CACHE,
         }
     else:
         query = {}

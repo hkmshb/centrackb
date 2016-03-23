@@ -10,6 +10,10 @@ from bottle import request, view as fn_view
 import settings
 
 
+# global cache to be used across some modules
+_PROJECTS_CHOICES_CACHE = None
+
+
 
 def view(tmpl_name):
     ref_date = _get_tdy_date
