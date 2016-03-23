@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - CENTrak</title>
+    <title>{{ title }} - CENTrack</title>
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datepicker3.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/select2.min.css" />
@@ -24,7 +24,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand">CENTrak</a>
+                <a href="/" class="navbar-brand">CENTrack</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -85,7 +85,7 @@
 
         <hr />
         <footer>
-            <p>&copy; {{ year }} - CENTrak<p>
+            <p>&copy; {{ year }} - CENTrack<p>
         </footer>
     </div>
     
