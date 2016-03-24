@@ -134,12 +134,15 @@ appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 			
 			$http({'method':'POST', 'data':data, 'url':urlpath})
 				.then(function success(resp) {
-						  if (resp.data.hasOwnProperty('message'))
+						  if (resp.data.hasOwnProperty('message')) {
 							  alert(resp.data.message);
-						  else if (resp.data.indexOf('Restricted') !== -1) {
+						  } else if (resp.data.indexOf('Restricted') !== -1) {
 							  alert("You do not have the necessary permissions to " +
 								    "view the request resource or perform the initiated " +
 								    "operation!");
+						  } else if (resp.data.indexOf('form-signin') !== -1) {
+						      alert("Session has expired. You'd need to log in again " +
+						            "to carry out the intended operation.");
 						  }
 					  },
 					  function failure(resp) {

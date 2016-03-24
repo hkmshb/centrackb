@@ -54,7 +54,22 @@ handleCaptureExport = function(format) {
 	window.location = target_url;
 	return false;
 },
-handleUserActivation = function() {
+handleUserProfileForm = function() {
+	$('#form-pwd').validate();
+	var form = $('#form-usr')
+	  , divt = $('.form-group.team')
+	  , txtt = divt.find('[name=team]');
+	
+	form.validate();
+	form.find('[name=role]').bind('change', function(e){
+	    if ($(e.target).val() === 'team-lead') {
+	        txtt.attr('required', '');
+	        divt.removeClass('hide');
+	    } else {
+	        txtt.removeAttr('required');
+	        divt.addClass('hide');
+	    }
+	});
 	
 };
 
@@ -67,6 +82,9 @@ App = function () {
 
             handleActivitySummaryRowToggle(),
             handleThemePanelExpand()
+        },
+        initUserProfileForm: function() {
+            handleUserProfileForm();
         },
         filterCapture: function() { 
             $('[name=filter]').bind('click', function () {
@@ -88,7 +106,6 @@ App = function () {
                 var code = $(this).data('registration-code')
                   , msg = 'Are you sure you want to activate this registration?'; 
         		
-                alert(_apiUrlPrefix);
                 self.confirm(msg, function(result) {
                     if (result === true) {
         				$.ajax({
@@ -105,8 +122,22 @@ App = function () {
                 });
             });
             $('[name=delete_reg]').on('click', function() {
-                var code = $(this).data('registration-code');
-                alert(code);
+                var code = $(this).data('registration-code')
+                  , msg = 'Are you sure you want to delete this registration?';
+                
+                self.confirm(msg, function(result) {
+                    if (result === true) {
+                        $.ajax({
+                            type: 'POST',
+                            url: _apiUrlPrefix + 'registrations/' + code + '/delete',
+                            success: function(data, status) {
+                                self.alert(data);
+                                var urlpath = window.location.pathname;
+                                window.location.pathname = urlpath;
+                            }
+                        });
+                    }
+                })
             });
             $('[name=delete_user]').on('click', function() {
         		var username = $(this).data('username')

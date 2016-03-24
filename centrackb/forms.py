@@ -110,7 +110,7 @@ class RegisterForm(UserFormBase):
 class UserForm(UserFormBase):
     
     def is_valid(self):
-        instance, fields = _(), ['username', 'email_addr', 'role']
+        instance, fields = _(), ['username', 'email_addr', 'role', 'team']
         for f in fields:
             instance[f] = self.request.forms.get(f, '').strip()
         
@@ -122,6 +122,8 @@ class UserForm(UserFormBase):
             self.errors.append("Email doesn't match KEDCO email format.")
         elif not instance.role:
             self.errors.append('User role is required.')
+        elif instance.role == 'team-lead' and not instance.team:
+            self.errors.append("User team for `team-lead`s is required.")
         
         self._instance = instance
         return (len(self.errors) == 0)
@@ -133,8 +135,20 @@ class UserForm(UserFormBase):
         user = get_authnz().user(self._instance.username)
         if (user.role != self._instance.role or
             user.email_addr != self._instance.email_addr): 
-            user.update(role=self._instance.role,
-                        email_addr=self._instance.email_addr)
+            user.update(
+                email_addr=self._instance.email_addr,
+                role=self._instance.role)
+        
+        user_profile = db.UserProfile.get_by_username(self._instance.username)
+        profile_entry = {
+            'username': self._instance.username, 
+            'team': self._instance.team
+        }
+        
+        if not user_profile and self._instance.team:
+            db.UserProfile.insert_one(profile_entry)
+        elif user_profile and user_profile.team != self._instance.team:
+            db.UserProfile.update_one(profile_entry)
 
 
 class PasswordChangeForm(FormBase):

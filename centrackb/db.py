@@ -432,3 +432,43 @@ class Station:
         record._id = ObjectId(record._id)
         return db.stations\
                  .update({'_id': record._id}, record)
+
+
+class UserProfile:
+    
+    @staticmethod
+    def get_all(paginate=True):
+        qry = {}
+        cur = db.user_profiles.find(qry)\
+                .sort('id', pymongo.ASCENDING)
+        return utils.paginate(cur) if paginate else cur
+    
+    @staticmethod
+    def get_by_username(username):
+        record = db.user_profiles.find_one({'username': username})
+        return _(record or {})
+    
+    @staticmethod
+    def insert_one(record):
+        username = record.get('username')
+        if not username:
+            raise Exception('UserProfile must include username.')
+        
+        if db.user_profiles.count({'username': username}) != 0:
+            msg_format = "UserProfile with username `%s` already exists."
+            raise Exception(msg_format % username)
+        
+        db.user_profiles.insert_one(record)
+    
+    @staticmethod
+    def update_one(record):
+        username = record.get('username')
+        if not username:
+            raise Exception('UserProfile must include username.')
+        
+        db.user_profiles.update_one({'username': username}, record)
+    
+    @staticmethod
+    def delete_one(username):
+        db.user_profile.delete({'username': username})
+

@@ -2,7 +2,7 @@
     <script type="text/javascript">
         (function($) {
             $(function() {
-                $('#form-pwd').validate();
+                App.initUserProfileForm();
             });
         })(jQuery);
     </script>

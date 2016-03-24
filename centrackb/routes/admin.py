@@ -40,8 +40,13 @@ def users():
     fields = ['username', 'role', 'email_addr', 'description']
     def func_users():
         for values in authnz.list_users():
-            row = zip(fields, values)
-            yield _(row)
+            row = _(zip(fields, values))
+            
+            # extract profile
+            profile = db.UserProfile.get_by_username(values[0])
+            row.update({'team': profile.team})
+            
+            yield row
     
     def func_pending():
         for code in authnz._store.pending_registrations:
@@ -63,9 +68,11 @@ def manage_user(username):
     if not user:
         raise HTTPError(404, "User not found: %s" % username)
     
+    profile = db.UserProfile.get_by_username(username)
     user_info = _(username=user.username,
                   email_addr=user.email_addr,
-                  role=user.role)
+                  role=user.role,
+                  team=profile.team)
     
     session = get_session()['messages']
     if request.method == 'POST':
@@ -86,6 +93,7 @@ def manage_user(username):
         user_info.update({
             'email_addr': request.forms.get('email_addr', ''),
             'role': request.forms.get('role', ''),
+            'team': request.forms.get('team', ''),
         })
     
     roles = sorted(list(authnz.list_roles()), key=lambda x: x[1], reverse=True)

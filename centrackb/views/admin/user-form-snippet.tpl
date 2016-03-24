@@ -3,7 +3,7 @@
         <b>{{ title }}</b>
     </div>
     <div class="panel-body">
-        <form method="post" class="form-horizontal">
+        <form id="form-usr" method="post" class="form-horizontal">
             <div class="form-group">
                 <label for="username" class="col-md-2 control-label">Username: </label>
                 <div class="col-md-6">
@@ -27,6 +27,13 @@
                         <option value="{{ text }}" {{ 'selected=""' if user.role == text else ''}}>{{ text }}</option>
                     % end
                     </select>
+                </div>
+            </div>
+            <div class="form-group team {{'hide' if user.role != 'team-lead' else ''}}">
+                <label for="team" class="col-md-2 control-label">Team: </label>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="team" required="" min-length="1"
+                           value="{{ user.team or '' }}" {{ 'readonly=""' if readonly else ''}} />
                 </div>
             </div>
             <div class="form-group {{ 'hide' if readonly else '' }}">

@@ -8,6 +8,7 @@
                 <thead>
                     <tr><th>Username</th>
                         <th>Role</th>
+                        <th>Team</th>
                         <th>Email</th>
                         <th></th>
                     </tr>
@@ -17,6 +18,7 @@
                     % for r in records:
                     <tr><td>{{ r.username }}</td>
                         <td>{{ r.role }}</td>
+                        <td>{{ r.team or '-' }}</td>
                         <td>{{ r.email_addr or '-' }}</td>
                         <td style="width:60px;">
                             <a href="/admin/users/{{ r.username }}/" name="edit_user" title="Edit User">
@@ -31,7 +33,7 @@
                     </tr>
                     % end
                 % else:
-                    <tr><td colspan="4">No data available.</td></tr>
+                    <tr><td colspan="5">No data available.</td></tr>
                 % end
                 </tbody>
             </table>

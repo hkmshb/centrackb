@@ -1,6 +1,6 @@
 <div class="row">
     <div class="form-register col-md-4">
-        <h3>Register To Use CENTrak</h3>
+        <h3>Register To Use CENTrack</h3>
         <form method="post" class="form-stacked">
             <div class="form-group">
                 <label for="id_username">Username</label>

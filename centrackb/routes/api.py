@@ -113,9 +113,16 @@ def user_activate():
 def user_deletion(username):
     try:
         authnz.delete_user(username)
+        db.UserProfile.delete_one(username)
         return 'Account deletion was successful!'
     except Exception as ex:
         return "Account deletion failed. Error: %s" % str(ex)
+
+
+@route('/api/registrations/<code>/delete', method=['POST'])
+@authorize(role='moderator')
+def registration_deletion(code):
+    return "Yet to be impletemented!"
 
 
 def _collect_choices():

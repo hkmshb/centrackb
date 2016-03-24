@@ -1,5 +1,5 @@
-<div class="form-signup">
-    <h3>CENTrak</h3>
+<div class="form-signin">
+    <h3>CENTrack</h3>
     <form method="post" class="form-stacked">
         <div class="form-group">
             <input type="text" name="username" class="form-control"
@@ -15,7 +15,7 @@
 
 % def head():
     <style type="text/css">
-        .form-signup {
+        .form-signin {
             width: 300px;
             margin: 20px auto 100px;
         }
