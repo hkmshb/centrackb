@@ -16,6 +16,27 @@ conn = pymongo.MongoClient()
 db = conn[settings.MONGODB_NAME]
 
 
+# utility functions
+def get_station_name(code):
+    if not utils._STATION_NAMES_CACHE:
+        utils._STATION_NAMES_CACHE = {}
+    
+    code = (code or '').upper()
+    if code and code not in utils._STATION_NAMES_CACHE:
+        entry, station = {}, Station.get_by_code(code)
+        if not station:
+            entry.update({'name': '?', 'source_feeder': '?'})
+        else:
+            entry.update({
+                'name': station.name, 
+                'source_feeder': station.source_feeder
+            })
+        utils._STATION_NAMES_CACHE[code] = entry
+    
+    entry = utils._STATION_NAMES_CACHE[code]
+    return entry['name']
+
+
 # voltage ratios
 class Volt:
     MVOLTL_LVOLT = 1

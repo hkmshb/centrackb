@@ -234,6 +234,7 @@ def capture_list():
         item_id=None )
     result['has_duplicates'] = _query_duplicate_count('captures')
     result['has_updates'] = _query_updates_count
+    result['get_extra_info'] = _query_extra_info
     return result
 
 
@@ -269,6 +270,7 @@ def update_list():
         title='Updates',
         item_id=None)
     result['has_duplicates'] = _query_duplicate_count('updates')
+    result['get_extra_info'] = _query_extra_info
     
     # fix: Issue #7 [local-gogs]
     # manually update the ids for projects to be returned
@@ -425,8 +427,19 @@ def _query_updates_count(record_id, rseq):
     return result
 
 
-# custom error pages
+def _query_extra_info(record):
+    info = {
+        'datetime': record.datetime_today,
+        'transformer': db.get_station_name(record.station)
+    }
+    return """
+        Capture Date: %(datetime)s \r
+        Transformer: %(transformer)s 
+    """ % info
+    
 
+
+# custom error pages
 if '--debug' not in sys.argv:
     @error(code=404)
     @error(code=500)

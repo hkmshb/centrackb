@@ -59,7 +59,16 @@
                 % for r in records:
                 <tr class="{{ 'dropped' if r.dropped else 'updated' if r.last_updated else '' }}">
                     <td>{{! enum(r.enum_id) }}</td>
-                    <td><a href="{{ r._id }}/">{{ r.rseq }}</a></td>
+                    <td>
+                    % if not defined('get_extra_info'):
+                        <a href="{{ r._id }}/">{{ r.rseq }}</a>
+                    % else:
+                        % info = get_extra_info(r)
+                        <a href="{{ r._id }}/" data-toggle="tooltip" title="{{ info }}">
+                            {{ r.rseq }}
+                        </a>
+                    % end 
+                    </td>
                     <td>{{ shorten(f(r.cust_name)).title() }}</td>
                     <td>{{ shorten("%s %s" % (addy(r.addy_no), addy(r.addy_street))).title() }}
                     <td>{{ f(r.cust_mobile1 or r.cust_mobile2) }}</td>
@@ -120,6 +129,7 @@
                 autoclose: true, toggleActive: true,
                 todayHighlight: true,           
             });
+        $('[data-toggle="tooltip"]').tooltip();
     </script>
 % end
 % rebase('layout.tpl', title=title, year=year, extra_scripts=scripts)

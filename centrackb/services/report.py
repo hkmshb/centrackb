@@ -178,7 +178,13 @@ def write_report(project_id, ref_date):
 
 
 def export_captures_to_csv(filename, records):
-    extract = lambda r: {k: r.get(k, '-') for k in report_cols}
+    def extract(row):
+        key, d = 'station', {k: row.get(k, '-') for k in report_cols}
+        if key in report_cols:
+            value = d[key]
+            d[key] = db.get_station_name(value)
+        return d
+    
     filepath = os.path.join(REPORTS_DIR, filename)
     
     dialect = csv.excel
@@ -187,19 +193,24 @@ def export_captures_to_csv(filename, records):
     with open(filepath, 'w') as f:
         writer = csv.DictWriter(f, fieldnames=report_cols, dialect=dialect)
         writer.writeheader()
-        
+        f.flush()
+         
         for record in records:
-            writer.writerow(extract(record))
-        
+            _record = extract(record)
+            writer.writerow(_record)
+         
         f.flush()
 
 
 def export_captures_to_xls(filename, records):
     def get_as_dict(rows):
         for r in rows:
-            yield {k: r.get(k, '-') for k in report_cols}
+            key, d = 'station', {k: r.get(k, '-') for k in report_cols}
+            if key in report_cols:
+                value = d[key]
+                d[key] = db.get_station_name(value)
+            yield d
     
     filepath = os.path.join(REPORTS_DIR, filename)
     df = pd.DataFrame(get_as_dict(records))
     df.to_excel(filepath, na_rep='-', columns=report_cols)
-    

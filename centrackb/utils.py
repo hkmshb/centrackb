@@ -12,6 +12,7 @@ import settings
 
 # global cache to be used across some modules
 _PROJECTS_CHOICES_CACHE = None
+_STATION_NAMES_CACHE = None 
 
 
 
@@ -45,8 +46,10 @@ def write_log(lines):
         print("LOG LINES:\r\n%s" % ('\t'.join(lines)))
         print()
 
+
 def _get_tdy_date():
     return datetime.today().date()
+
 
 def _get_ref_date():
     try:
