@@ -2,6 +2,7 @@ CAPTURE_CATEGORIES = (
     ('rseq',    'Duplicate Route Sequence'),
     ('acct_no', 'Duplicate Account Number'),
     ('with-updates', 'Entries With Updates'),
+    ('invalid-stations', 'Invalid Station Codes'),
     ('updated', 'Updated Captures'),
     ('dropped', 'Dropped Captures'),
 )

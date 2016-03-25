@@ -244,6 +244,19 @@ class CaptureBase:
         rseqs = [r['rseq'] for r in cur]
         return rseqs
     
+    def get_valid_station_codes(self, **params):
+        local_qry, qry = {}, ({} if not params else params)
+        if 'rseq' in qry:
+            del qry['rseq']
+        
+        if 'project_id' in qry:
+            value = qry['project_id']['$regex']
+            local_qry['source_feeder'] = (value[2:6]).upper()
+        
+        cur = db.stations.find(local_qry, {'code': 1})
+        stations = [r['code'] for r in cur]
+        return stations
+    
     def get_duplicates(self, field, **params):
         qry = ({} if not params else params.copy())
         if field == 'acct_no':
@@ -301,10 +314,14 @@ class CaptureBase:
                 else:
                     _rseqs = self.get_available_updates(show_only_field, **qry)
                     qry.update({'rseq': {'$in': _rseqs}})
+            elif show_only_field == 'invalid-stations':
+                codes = self.get_valid_station_codes(**qry)
+                qry['station'] = {'$nin': codes}
             else:
                 duplicates = self.get_duplicates(show_only_field, **qry)
                 qry = {show_only_field: {'$in': duplicates[1]}}
         
+        print(qry)
         cur = self.db.find(qry)
         if not sort_by:
             cur = cur.sort((['datetime_today', pymongo.DESCENDING],
