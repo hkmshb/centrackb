@@ -35,9 +35,18 @@ def capture_update(record_type, record_id):
     record = table.get(record_id)
     if not record:
         return {'success':False, 'message':'Original record not found' }
-    
-    if not request.json:
+    elif not request.json:
         return {'success':False, 'message':'Posted record not available'}
+    
+    # ensure user can make modification
+    user = authnz.current_user
+    profile = db.UserProfile.get_by_username(user.username)
+    if user.role == 'team-lead' and profile.team.upper() != '_ALL_':
+        user_team = profile.team.upper()[0]
+        if user_team != record.enum_id.upper()[0]:
+            msg = ("As team-lead for '%s' you cannot update capture entry "
+                   "made by other teams besides yours.") % (profile.team)
+            return {'success': False, 'message': msg}
     
     capture_upd, snapshot = _(request.json['capture']), None
     

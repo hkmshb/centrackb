@@ -68,6 +68,7 @@ handleUserProfileForm = function() {
 	    } else {
 	        txtt.removeAttr('required');
 	        divt.addClass('hide');
+	        txtt.val('');
 	    }
 	});
 	

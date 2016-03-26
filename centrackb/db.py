@@ -504,7 +504,10 @@ class UserProfile:
         if not username:
             raise Exception('UserProfile must include username.')
         
-        db.user_profiles.update_one({'username': username}, record)
+        db.user_profiles.update_one(
+            {'username': username}, 
+            {'$set': {'team': record.get('team')}}
+        )
     
     @staticmethod
     def delete_one(username):
