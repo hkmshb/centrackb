@@ -161,6 +161,9 @@ def _purity_summary(df, prefix):
 
     # duplicate acct_no check
     key = 'acct_no'
+    if not key in df.columns:
+        df[key] = ''
+    
     f = df[df[key].isnull() == False]
     f = f[f.duplicated(key) == True]
     result['%s_acctno_duplicates' % prefix] = f.index.size
