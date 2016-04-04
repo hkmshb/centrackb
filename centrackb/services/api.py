@@ -2,6 +2,7 @@
 Provides access to the Survey platforms data via API.
 """
 import json
+import logging
 from urllib.parse import urlencode
 
 import requests
@@ -18,7 +19,7 @@ def get_xforms():
         url_base = API_BASE_URL % 'data'
         return _get(url_base, {})
     except Exception as ex:
-        print('error (api.get_xform): %s' % str(ex))
+        logging.error('error (api.get_xform): %s' % str(ex))
         return []
 
 
@@ -31,7 +32,7 @@ def get_captures(form_id, date_captured=None, count=False, start=0):
 
         return _get(url_base, query, count, start)
     except Exception as ex:
-        print('error (api.get_captures): %s' % str(ex))
+        logging.error('error (api.get_captures): %s' % str(ex))
         return []
 
 
