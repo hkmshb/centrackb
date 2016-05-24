@@ -48,9 +48,10 @@ report_cols = [
     # cust-info
     'cust_name', 'cust_mobile1', 'addy_no', 'addy_street', 
     # acct-info
-    'acct_status', 'acct_no', 'tariff',
+    'acct_status', 'book_code', 'acct_no', 'tariff', 
+    'tariff_new',
     # meter-status
-    'meter_status', 'meter_no', 'meter_type',
+    'meter_status', 'meter_no', 'meter_type', 'amt_4_adc',
     # others
-    'plot_type', 'occupant', 'remarks'
+    'plot_type', 'occupant', 'gps', 'remarks'
 ]
