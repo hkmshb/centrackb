@@ -245,7 +245,7 @@ def xforms_sync():
                 msg = 'Sync was partially successful. %s entries failed.'
                 messages['warn'].append(msg % len(failed))
 
-            write_log(reports)
+            # write_log(reports)
     except ConnectionError as ex:
         messages['fail'].append('Connection Error. Unable to establish '
                                 'Internet connection.')
