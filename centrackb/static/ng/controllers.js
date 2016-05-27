@@ -188,7 +188,7 @@ appControllers.controller('CaptureViewCtrl', function($scope, $http, $compile){
 					isNaN(Number('0x' + sscode.substring(2))))
 					return false;
 				
-				if ((sscode[0] !== 'S' and sscode[0] !== 'D') || (sscode[1] !== '1' && sscode[1] !== '3'))
+				if ((sscode[0] !== 'S' && sscode[0] !== 'D') || (sscode[1] !== '1' && sscode[1] !== '3'))
 					return false;
 				
 				if (isNaN(upcode) || upcode < 0 || upcode > 4)

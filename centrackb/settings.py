@@ -51,7 +51,8 @@ report_cols = [
     'acct_status', 'book_code', 'acct_no', 'tariff', 
     'tariff_new',
     # meter-status
-    'meter_status', 'meter_no', 'meter_type', 'amt_4_adc',
+    'meter_status', 'meter_no', 'meter_type', 'meter_phase',
+    'amt_4_adc', 'last_payment', 'multi',
     # others
     'plot_type', 'occupant', 'gps', 'remarks'
 ]
