@@ -168,7 +168,19 @@ def project_sync(project_id):
     for xform_id in xforms_to_sync:
         count = sync_target.count_by_form(xform_id)
         xform = db.XForm.get_by_id(xform_id)
-
+        
+        # transform nerc compliant forms differently; transform content to march 
+        # previous form entries in order not to break application analysis... 
+        # forms 08 and above are supposed to be nerc compliant
+        
+        transform_func = transform.to_flatten_dict
+        try:
+            form_no = int(xform_id[7:9])
+            if form_no >= 8:
+                transform_func = transform.ndc_flatten_dict
+        except:
+            pass
+        
         # pull new captures
         try:
             transformed, pull_count = [], 0
@@ -177,7 +189,7 @@ def project_sync(project_id):
                 if captures:
                     pull_count += len(captures)
                     for c in captures:
-                        transformed.append(transform.to_flatten_dict(c))
+                        transformed.append(transform_func(c))
 
                     sync_target.save_many(transformed)
                     transformed = []

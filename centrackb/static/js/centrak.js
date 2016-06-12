@@ -23,13 +23,21 @@ handleCaptureFiltering = function() {
                   'meter_status', 'meter_type', 'project_id', 'show_only', 
                   'sort_by', 'then_by'];
     
+    var fname = null;
     for (fn in fnames) {
-        entry = $('[name=' + fnames[fn] + ']').val();
+        fname = fnames[fn];
+        entry = $('[name=' + fname + ']').val();
         if (entry !== undefined && entry !== "") {
-            query += (fnames[fn] + "=" + entry + "&");
+            query += (fname + "=" + entry + "&");
+            
+            // Note: applying keys that translate to 'Yet to be determined'
+            // i.e. unknown & ytbd
+            if (fname === 'acct_status' && entry === 'unknown') {
+                query += (fname + "=ytbd&");
+            }
         }
     }
-        
+    
     if (query.substr(-1) === '&' || query.substr(-1) === '?')
     	query = query.substring(0, query.length - 1);
     

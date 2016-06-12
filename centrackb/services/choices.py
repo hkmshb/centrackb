@@ -10,6 +10,8 @@ CAPTURE_CATEGORIES = (
 ACCT_STATUS = (
     ('unknown',         'Yet to be Determined'),
     ('new',             'New'),
+    ('existing',        'Existing'),
+    ('no-supply',       'No Supply'),
     ('active',          'Active'),
     ('inactive',        'Inactive'),
     ('not-conn',        'Not Connected'),
@@ -53,12 +55,13 @@ METER_BRAND = (
 
 METER_STATUS = (
     ('unknown',     'Yet to be Determined'),
+    ('ok',          'OK'),
+    ('faulty',      'Faulty'),
+    ('tmpr-susp',   'Tampering Suspected'),
     ('n-a',         'Not Applicable'),
     ('none',        'None'),
-    ('ok',          'OK'),
     ('bypass',      'By-Pass'),
     ('burnt',       'Burnt'),
-    ('faulty',      'Faulty'),
     ('abandoned',   'Abandoned'),
     ('removed',     'Removed'),
     ('stolen',      'Stolen'),

@@ -1,5 +1,5 @@
 ﻿"""
-Transform json data from on form to another.                             
+Transform json data from on form to another.
 """
 from datetime import datetime
 
@@ -17,9 +17,21 @@ RULES = {
             'occupant_status': 'occupant',
             'neighbour_rseqid': 'neighbour_rseq',
             'cust_gps_coord': 'gps',
+            'addr_gps': 'gps',
             'rseqId': 'rseq',
         },
+        'name_map2': {  
+            # form-08 entries
+            'kangis_no': 'kg_Id',
+            'addr_no':'addy_no',
+            'addr_street':'addy_street',
+            'addr_state':'addy_state',
+            'addr_lga':'addy_lga',
+            'tariff_pp': 'tariff_new',
+            'landlord_name':'new_tholder',
+        },
         'transform': [
+            'cin_station',
             'cust_name',
             'enum_id',
             'rseq',
@@ -150,3 +162,72 @@ def to_flatten_dict(entry):
     target['dropped'] = False
     return target
 
+
+def ndc_flatten_dict(entry):
+    """Transforms Onadata form instance json to consumable form."""
+    target = {}
+    today_date = datetime.today().date().isoformat()
+    rules_excl  = RULES['instance']['excludes']
+    rules_nmap  = RULES['instance']['name_map']
+    rules_nmap2 = RULES['instance']['name_map2']
+    rules_xfrm  = RULES['instance']['transform']
+
+    for key,value in entry.items():
+        if key in rules_excl:
+            continue
+        
+        last_key = None
+        if '/' in key:
+            # exclude entries
+            key_lpart, key_rpart = key.split('/')
+            if key_rpart in rules_excl:
+                continue
+            
+            # re-map names
+            if key_rpart in rules_nmap:
+                key_rpart = rules_nmap[key_rpart]
+            
+            # re-map for nerc
+            elif key_rpart in rules_nmap2:
+                target[key_rpart] = value
+                key_rpart = rules_nmap2[key_rpart]
+            
+            target[key_rpart] = value
+            last_key = key_rpart
+        else:
+            last_key = key
+            target[key] = value
+        
+        # text transform
+        if last_key in rules_xfrm:
+            target[last_key] = target[last_key].upper()
+        last_key = None
+    
+    # other transforms
+    # -------------------------------------------------------------------
+    if 'gps' in target:
+        target['gps'] = [float(v) for v in target['gps'].split(' ')]
+    else:
+        target['gps'] = []
+
+    _xform_id_str = target['_xform_id_string'].replace('_nerc', '')
+    parts = _xform_id_str.split('_')
+    xform_id = "{}_{}_{}".format(parts[0], parts[1][:2], parts[2])
+    target['project_id'] = xform_id
+    
+    target['group'] = target['enum_id'][0]
+    target['station'] = target['cin_station']
+    target['substation'] = target['cin_station']
+    target['upriser'] = "{}/{}".format(target['cin_station'], target['cin_ltroute'][0])
+    target['cin'] = "{}/{}/{}".format(target['cin_station'], target['cin_ltroute'], target['cin_custno'])
+    target['rseq'] = "{}/{}".format(target['upriser'], target['cin_custno'])
+    target['date_created'] = today_date
+    target['last_updated'] = None
+    target['validated'] = False
+    target['snapshots'] = {}
+    target['dropped'] = False
+
+    if 'neighbour_cin' in target and target['neighbour_cin']:
+        target['neighbour_rseq'] = "{}/{}".format(target['upriser'], target['neighbour_cin'])
+    
+    return target

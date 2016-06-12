@@ -177,7 +177,7 @@ def manage_project(id=None):
         raise HTTPError(404, "Project not found: %s" % id)
 
     xforms = db.XForm.get_unassigned_xforms(False, False)
-    uforms = db.XForm.get_unassigned_uforms(False, False)
+    uforms = db.XForm.get_unassigned_uforms(False, False, project)
     session = get_session()
         
     if request.method == 'POST':

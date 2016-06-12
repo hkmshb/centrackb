@@ -126,11 +126,15 @@ class XForm:
                 .sort('id', pymongo.ASCENDING)
         return utils.paginate(cur) if paginate else cur
 
+    # Fix: prevent uform assigned to a project from being excluded in dropdown
+    #      items for form view of project the uform is assigned to.
     @staticmethod
-    def get_unassigned_uforms(include_inactive=False, paginate=True):
+    def get_unassigned_uforms(include_inactive=False, paginate=True,
+                              excluded_project=None):
         uforms = []
         for p in Project.get_all(paginate=False):
-            uforms.extend(p['uforms'])
+            if excluded_project and excluded_project['id'] != p['id']:
+                uforms.extend(p['uforms'])
         
         # HACK: included the cust_updform regex pattern to support update
         # forms used for Hotoro 11KV Feeder...
