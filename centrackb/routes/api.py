@@ -67,16 +67,24 @@ def capture_update(record_type, record_id):
     # if acct_no changed, ensure it doesn't cause duplication
     if record.acct_no != capture_upd.acct_no:
         assert record._id == capture_upd._id
-        params = {'_id': {'$ne': capture_upd._id}, 'acct_no': capture_upd.acct_no}
-        found = list(table.query(paginate=False, **params))
-        if found and len(found) > 0:
-            return {
-                'success': False,
-                'message': (
-                    'Update aborted. Capture with account number exist.\n'
-                    'Existing Record (id=%s, enum_id=%s)' % (
-                        found[0]['_id'], found[0]['enum_id']))
-            }
+
+        if capture_upd.acct_no == "" and capture_upd.acct_status == "new":
+            if capture_upd.book_code == "":
+                return {
+                    'success': False,
+                    'message': "A new account is required to carry a 'Book Code'"
+                }
+        else:
+            params = {'_id': {'$ne': capture_upd._id}, 'acct_no': capture_upd.acct_no}
+            found = list(table.query(paginate=False, **params))
+            if found and len(found) > 0:
+                return {
+                    'success': False,
+                    'message': (
+                        'Update aborted. Capture with account number exist.\n'
+                        'Existing Record (id=%s, enum_id=%s)' % (
+                            found[0]['_id'], found[0]['enum_id']))
+                }
     
     if not record.snapshots:
         snapshot = record.copy()
