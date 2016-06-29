@@ -1,5 +1,6 @@
 __pycache__/
 [_.]ignore/
+.vscode/
 
 
 secret.py

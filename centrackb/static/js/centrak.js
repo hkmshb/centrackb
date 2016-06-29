@@ -1,5 +1,6 @@
 ﻿/* jshint -W014, laxcomma:true */
 
+var App = null;
 (function($) {
     'use strict';
 
