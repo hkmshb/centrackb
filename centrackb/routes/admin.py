@@ -3,6 +3,7 @@ Routes and views for admin access.
 """
 from bottle import HTTPError, post, route, request, redirect, HTTPResponse
 from requests import ConnectionError
+from datetime import datetime
 import pymongo
 import logging
 
@@ -168,13 +169,13 @@ def projects():
 
 
 @route('/admin/projects/create', method=['GET', 'POST'])
-@route('/admin/projects/<id>/', method=['GET', 'POST'])
+@route('/admin/projects/<code>/', method=['GET', 'POST'])
 @view('admin/project-form')
 @authorize(role='moderator')
-def manage_project(id=None):
-    project = _(xforms=[], uforms=[]) if not id else db.Project.get_by_id(id)
+def manage_project(code=None):
+    project = _(xforms=[], uforms=[]) if not code else db.Project.get_by_code(code)
     if not project:
-        raise HTTPError(404, "Project not found: %s" % id)
+        raise HTTPError(404, "Project not found: %s" % code)
 
     xforms = db.XForm.get_unassigned_xforms(False, False)
     uforms = db.XForm.get_unassigned_uforms(False, False, project)
@@ -185,7 +186,7 @@ def manage_project(id=None):
         try:
             if form.is_valid():
                 form.save()
-                action = ('created' if not id else 'updated')
+                action = ('created' if not code else 'updated')
                 session['messages']['pass'].append('Project %s' % action)
                 
                 # HACK: clear cache used by capture/update listing
@@ -195,7 +196,7 @@ def manage_project(id=None):
 
             return redirect('/admin/projects/')
         except pymongo.errors.DuplicateKeyError:
-            session['messages']['fail'].append("Provided Project Id and/or Name already exists.")
+            session['messages']['fail'].append("Provided Project Code and/or Name already exists.")
             project = form._instance
 
     return {
@@ -230,8 +231,13 @@ def xforms_sync():
         
                 try:
                     f['active'] = False
+                    f['object_id'] = f['id']
+                    f['type'] = 'C' if f['id_string'][6] == 'f' else 'U'
+                    del f['id']
+                    
                     db.XForm.insert_one(f)
                 except Exception as ex:
+                    print(ex)
                     failed.append(f)
                     reports.append(str(ex))
 

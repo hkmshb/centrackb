@@ -19,7 +19,7 @@
                 <tbody>
                 % if records:
                     % for r in records:
-                    <tr><td style="white-space:nowrap;"><a href="/admin/projects/{{ r.id }}/">{{ r.name }}</a></td>
+                    <tr><td style="white-space:nowrap;"><a href="/admin/projects/{{ r.code }}/">{{ r.name }}</a></td>
                         <td>
                         % for f in r.xforms:
                             <a href="/admin/xforms/{{ f }}" style="margin-bottom:2px; display: inline-block;">

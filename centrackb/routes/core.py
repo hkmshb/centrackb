@@ -31,8 +31,8 @@ def index():
     wkdate_bounds = get_weekdate_bounds
 
     for p in projects:
-        record = _(id=p.id, name=p.name)
-        captures = db.Capture.get_by_project(p.id, paginate=False)
+        record = _(code=p.code, name=p.name)
+        captures = db.Capture.get_by_project(p.code, paginate=False)
         if captures.count():
             summary = stats.series_purity_summary(captures, ref_date)
             record.update(summary)
@@ -102,8 +102,8 @@ def projects():
     projects = db.Project.get_all()
 
     for p in projects:
-        record = _(id=p.id, name=p.name)
-        captures = db.Capture.get_by_project(p.id, paginate=False)
+        record = _(code=p.code, name=p.name)
+        captures = db.Capture.get_by_project(p.code, paginate=False)
         if captures.count():
             summary = stats.activity_summary(captures)
             record.update(summary)
@@ -115,11 +115,11 @@ def projects():
     }
 
 
-@route('/projects/<project_id>/')
+@route('/projects/<project_code>/')
 @view('project-view')
 @authorize()
-def project_view(project_id):
-    project = db.Project.get_by_id(project_id)
+def project_view(project_code):
+    project = db.Project.get_by_code(project_code)
     xrecords, urecords = [], []
 
     for f in project.xforms:
@@ -148,12 +148,12 @@ def project_view(project_id):
     }
 
 
-@post('/projects/<project_id>/sync')
+@post('/projects/<project_code>/sync')
 @authorize(role='moderator')
-def project_sync(project_id):
-    p = db.Project.get_by_id(project_id)
+def project_sync(project_code):
+    p = db.Project.get_by_code(project_code)
     if not p:
-        raise HTTPError(404, 'Project not found: %s' % project_id)
+        raise HTTPError(404, 'Project not found: %s' % project_code)
 
     messages = get_session()['messages']
     form_type, xforms_to_sync = None, None
@@ -201,7 +201,7 @@ def project_sync(project_id):
             messages['fail'].append('Sync failed. %s' % str(ex))
             logging.error('sync failed. %s', str(ex), exc_info=True)
 
-    return redirect('/projects/%s/' % project_id)
+    return redirect('/projects/%s/' % project_code)
 
 
 @route('/xforms/<form_id>/')
@@ -396,7 +396,7 @@ def _query_capture(tbl, title, item_id, paginate=True):
         if not utils._PROJECTS_CHOICES_CACHE:
             project_choices = []
             for p in db.Project.get_all(False, paginate=False):
-                project_choices.append((p['id'], p['name']))
+                project_choices.append((p['code'], p['name']))
             utils._PROJECTS_CHOICES_CACHE = project_choices
         
         return {

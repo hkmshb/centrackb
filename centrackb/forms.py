@@ -180,21 +180,21 @@ class ProjectForm(FormBase):
     
     def is_valid(self):
         _id = self.request.forms.get('_id', '').strip()
-        id  = self.request.forms.get('id', '').strip()
+        code  = self.request.forms.get('code', '').strip()
         name = self.request.forms.get('name', '').strip()
         xforms = self.request.forms.getall('xforms')
         uforms = self.request.forms.getall('uforms')
         active = self.request.forms.get('active', False) == 'on'
 
-        if not id:
-            self.errors.append('Project Id required')
+        if not code:
+            self.errors.append('Project Code required')
         if not name:
             self.errors.append('Project name required.')
         if self.errors:
             return False
 
         self._instance = _(
-            _id=_id, id=id, name=name, 
+            _id=_id, code=code, name=name, 
             xforms=xforms, uforms=uforms,
             active=active
         )

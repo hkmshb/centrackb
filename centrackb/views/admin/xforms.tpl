@@ -16,10 +16,10 @@
                 % if records:
                     % for r in records:
                     <tr><td><a href="/xforms/{{ r.id_string }}/">{{ r.title }}</a></td>
-                        <td>{{ r.date_created }}</td>
-                        <td><label for="activate-{{ r.id }}" class="table-label">
+                        <td>{{ r.date_imported }}</td>
+                        <td><label for="activate-{{ r.object_id }}" class="table-label">
                                 <input type="checkbox" name="activate" value="{{ r.id_string }}"
-                                        id="activate-{{ r.id }}" {{ "checked" if r.active else "" }} />
+                                        id="activate-{{ r.object_id }}" {{ "checked" if r.active else "" }} />
                                 Activate
                             </label>
                         </td></tr>

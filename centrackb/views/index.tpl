@@ -41,7 +41,7 @@
                     <tbody>
                     % if records:
                         % for r in records:
-                        <tr><td><a href="/projects/{{r.id}}/">{{ r.name }}</a></td>
+                        <tr><td><a href="/projects/{{r.code}}/">{{ r.name }}</a></td>
                             <td class="lvsep">{{ r.d_total or '-' }}</td>
                             <td>{{ r.d_rseq_duplicates or '-' }}</td>
                             <td>{{ r.d_acctno_duplicates or '-' }}</td>
@@ -79,10 +79,10 @@
             <div class="panel-body">
                 <form method="post" class="form-inline report-form" action="/r/default/">
                     <div class="form-group">
-                        <select name="project_id" class="form-control">
+                        <select name="project_code" class="form-control">
                         % if records:
                             % for r in records:
-                            <option value="{{ r.id }}">{{ r.name[:8] }}</option>
+                            <option value="{{ r.code }}">{{ r.name[:8] }}</option>
                             % end
                         % end
                         </select>

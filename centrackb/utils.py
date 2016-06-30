@@ -289,15 +289,15 @@ class MongoDbSetupMiddleware:
         ASC = pymongo.ASCENDING
 
         # projects collection
-        indexes = [IndexModel([('id', ASC)], unique=True),
+        indexes = [IndexModel([('code', ASC)], unique=True),
                    IndexModel([('name', ASC)], unique=True)]
         db.projects.create_indexes(indexes)
 
         # xforms collection
         indexes = [IndexModel([('id_string', ASC)]),
-                   IndexModel([('id', ASC)], unique=True),
+                   IndexModel([('object_id', ASC)], unique=True),
                    IndexModel([('title', ASC)], unique=True)]
-        db.xforms.create_indexes(indexes)
+        #db.xforms.create_indexes(indexes)
 
         # captures
         indexes = [IndexModel([('rseq', ASC)]),

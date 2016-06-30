@@ -63,12 +63,12 @@ class Project:
     def get_all(include_inactive=True, paginate=True):
         qry = {} if include_inactive else {'active': True}
         cur = db.projects.find(qry)\
-                .sort('id', pymongo.ASCENDING)
+                .sort('code', pymongo.ASCENDING)
         return utils.paginate(cur) if paginate else cur
 
     @staticmethod
-    def get_by_id(id):
-        record = db.projects.find_one({'id': id})
+    def get_by_code(code):
+        record = db.projects.find_one({'code': code})
         return _(record or {})
 
     @staticmethod
@@ -79,10 +79,10 @@ class Project:
                  .insert_one(record)
     
     @staticmethod
-    def set_active(id, status):
+    def set_active(code, status):
         return db.projects\
                  .update_one(
-            {'id': id},
+            {'code': code},
             {'$set': {
                 'active': status,
                 'last_updated': datetime.now()}
@@ -93,7 +93,7 @@ class Project:
     def update_one(record):
         record['last_updated'] = datetime.now()
         return db.projects\
-                 .update({'id': record.id}, record)
+                 .update({'code': record.code}, record)
 
 
 class XForm:
@@ -107,7 +107,7 @@ class XForm:
     def get_all(include_inactive=False, paginate=True):
         qry = {} if include_inactive else {'active': True}
         cur = db.xforms.find(qry)\
-                .sort('id', pymongo.DESCENDING)
+                .sort('object_id', pymongo.DESCENDING)
         return utils.paginate(cur) if paginate else cur
 
     @staticmethod
@@ -116,12 +116,12 @@ class XForm:
         for p in Project.get_all(paginate=False):
             xforms.extend(p['xforms'])
 
-        qry = {'id': {'$nin': xforms}}
+        qry = {'object_id': {'$nin': xforms}}
         if not include_inactive:
             qry.update({'active': True})
 
         cur = db.xforms.find(qry)\
-                .sort('id', pymongo.ASCENDING)
+                .sort('object_id', pymongo.ASCENDING)
         return utils.paginate(cur) if paginate else cur
 
     # Fix: prevent uform assigned to a project from being excluded in dropdown
@@ -131,7 +131,7 @@ class XForm:
                               excluded_project=None):
         uforms = []
         for p in Project.get_all(paginate=False):
-            if excluded_project and excluded_project['id'] != p['id']:
+            if excluded_project and excluded_project['code'] != p['code']:
                 uforms.extend(p['uforms'])
         
         # HACK: included the cust_updform regex pattern to support update
@@ -146,7 +146,7 @@ class XForm:
             qry.update({'active': True})
         
         cur = db.xforms.find(qry)\
-                .sort('id', pymongo.ASCENDING)
+                .sort('object_id', pymongo.ASCENDING)
         return utils.paginate(cur) if paginate else cur
   
     @staticmethod
@@ -156,7 +156,7 @@ class XForm:
 
     @staticmethod
     def insert_one(record):
-        record['date_created'] = datetime.now()
+        record['date_imported'] = datetime.now()
         record['last_updated'] = None
         return db.xforms\
                  .insert_one(record)

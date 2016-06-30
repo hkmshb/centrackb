@@ -4,10 +4,10 @@
     <div class="panel-body">
         <form method="post" class="form-horizontal">
             <div class="form-group">
-                <label for="id" class="col-md-2 control-label">Project Id: </label>
+                <label for="id" class="col-md-2 control-label">Project Code: </label>
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="id" required="required"
-                           value="{{ project.id or '' }}" />                    
+                    <input type="text" class="form-control" name="code" required="required"
+                           value="{{ project.code or '' }}" />                    
                 </div>
             </div>
             <div class="form-group">
