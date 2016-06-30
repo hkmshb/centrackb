@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 import utils
 import settings
 from utils import Storage as _
+from dateutil.parser import parse
 
 
 
@@ -72,28 +73,25 @@ class Project:
 
     @staticmethod
     def insert_one(record):
-        tdy = datetime.today().date().isoformat()
-        record['date_created'] = tdy
-        record['last_modified'] = None
+        record['date_created'] = datetime.now()
+        record['last_updated'] = None
         return db.projects\
                  .insert_one(record)
     
     @staticmethod
     def set_active(id, status):
-        tdy = datetime.today().date().isoformat()
         return db.projects\
                  .update_one(
             {'id': id},
             {'$set': {
                 'active': status,
-                'last_modified': tdy}
+                'last_updated': datetime.now()}
             }
         )
     
     @staticmethod
     def update_one(record):
-        tdy = datetime.today().date().isoformat()
-        record['last_modified'] = tdy
+        record['last_updated'] = datetime.now()
         return db.projects\
                  .update({'id': record.id}, record)
 
@@ -158,20 +156,18 @@ class XForm:
 
     @staticmethod
     def insert_one(record):
-        tdy = datetime.today().date().isoformat()
-        record['date_created'] = tdy
-        record['last_modified'] = None
+        record['date_created'] = datetime.now()
+        record['last_updated'] = None
         return db.xforms\
                  .insert_one(record)
     
     @staticmethod
     def set_active(id, status):
-        tdy = datetime.today().date().isoformat()
         return db.xforms.update_one(
             {'id_string': id},
             {'$set': {
                 'active': status,
-                'last_modified': tdy }
+                'last_updated': datetime.now() }
             }
         )
 
@@ -187,11 +183,11 @@ class CaptureBase:
         
     def count_by_date(self, ref_date):
         return self.db\
-                   .count({'datetime_today': ref_date})
+                   .count({'datetime_today': parse(ref_date)})
 
     def count_by_date_form(self, ref_date, ref_id):
         return self.db\
-                   .count({'datetime_today': ref_date,
+                   .count({'datetime_today': parse(ref_date),
                            '_xform_id_string': ref_id })
     
     def count_by_form(self, ref_id):
@@ -216,13 +212,13 @@ class CaptureBase:
 
     def get_by_date(self, ref_date, paginate=True):
         cur = self.db\
-                  .find({'datetime_today': ref_date})\
+                  .find({'datetime_today': parse(ref_date)})\
                   .sort('rseq', pymongo.ASCENDING)
         return utils.paginate(cur) if paginate else cur
 
     def get_by_date_form(self, ref_date, ref_id, paginate=True):
         cur = self.db\
-                  .find({'datetime_today': ref_date,
+                  .find({'datetime_today': parse(ref_date),
                          '_xform_id_string': ref_id})
         return utils.paginate(cur) if paginate else cur
 
@@ -396,17 +392,15 @@ class Feeder:
 
     @staticmethod
     def insert_one(record):
-        tdy = datetime.today().date().isoformat()
         record['active'] = True
-        record['date_created'] = tdy
-        record['last_modified'] = None
+        record['date_created'] = datetime.now()
+        record['last_updated'] = None
         return db.feeders\
                  .insert_one(record)
      
     @staticmethod
     def update_one(record):
-        tdy = datetime.today().date().isoformat()
-        record['last_modified'] = tdy
+        record['last_updated'] = datetime.now()
         record._id = ObjectId(record._id)
         return db.feeders\
                  .update({'_id': record._id}, record)
@@ -462,17 +456,15 @@ class Station:
 
     @staticmethod
     def insert_one(record):
-        tdy = datetime.today().date().isoformat()
         record['active'] = True
-        record['date_created'] = tdy
-        record['last_modified'] = None
+        record['date_created'] = datetime.now()
+        record['last_updated'] = None
         return db.stations\
                  .insert_one(record)
      
     @staticmethod
     def update_one(record):
-        tdy = datetime.today().date().isoformat()
-        record['last_modified'] = tdy
+        record['last_updated'] = datetime.now()
         record._id = ObjectId(record._id)
         return db.stations\
                  .update({'_id': record._id}, record)
