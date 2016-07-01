@@ -4,7 +4,8 @@ Routes and views for the bottle application.
 import os
 import sys
 import logging
-from datetime import datetime, date
+from datetime import datetime
+from dateutil.parser import parse
 from bottle import HTTPError, post, route, request, response, redirect,\
      error, static_file, view as viewb, HTTPResponse
 from requests.exceptions import ConnectionError
@@ -248,7 +249,7 @@ def capture_list():
     result['has_updates'] = _query_updates_count
     result['get_extra_info'] = _query_extra_info
     return result
-
+ 
 
 @route('/captures/<item_id:int>/')
 @view('capture-view')
@@ -372,8 +373,10 @@ def _query_capture(tbl, title, item_id, paginate=True):
             for f in filter_fields:
                 entry = request.query.get(f, None)
                 if entry:
-                    if f != 'show_only':
+                    if f not in ('datetime_today', 'show_only'):
                         query[f] = {'$regex': '.*%s.*' % entry, '$options':'i'}
+                    elif f == 'datetime_today':
+                        query[f] = parse(entry)
                     else:
                         show_only_field = entry
             

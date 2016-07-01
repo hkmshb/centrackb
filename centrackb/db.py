@@ -323,7 +323,6 @@ class CaptureBase:
                 duplicates = self.get_duplicates(show_only_field, **qry)
                 qry = {show_only_field: {'$in': duplicates[1]}}
         
-        print(qry)
         cur = self.db.find(qry)
         if not sort_by:
             cur = cur.sort((['datetime_today', pymongo.DESCENDING],

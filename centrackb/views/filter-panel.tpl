@@ -1,4 +1,5 @@
 % get = lambda x: x['$regex'][2:-2] or '' if x else ''
+% get_date = lambda x: '' if not x else x.strftime('%Y-%m-%d')
 % selected = lambda x, y: 'selected=""' if x and (x['$regex'][2:-2] or '') == y else ''
 % selected2 = lambda x, y: 'selected=""' if x == y else ''
 
@@ -15,7 +16,7 @@
                 <div class="col-md-7">
                     <div class="input-group date">
                         <input type="text" class="form-control" name="datetime_today" placeholder="yyyy-mm-dd" 
-                               value="{{ get(q.datetime_today) }}" required="" disabled="">
+                               value="{{ get_date(q.datetime_today) }}" required="" disabled="">
                             <span class="input-group-addon btn" style="border-radius: 0 4px 4px 0;">
                                 <i class="glyphicon glyphicon-th"></i>
                             </span>

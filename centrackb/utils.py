@@ -303,7 +303,7 @@ class MongoDbSetupMiddleware:
         indexes = [IndexModel([('rseq', ASC)]),
                    IndexModel([('group', ASC)]),
                    IndexModel([('acct_no', ASC)]),
-                   IndexModel([('substation', ASC)]),
+                   IndexModel([('station', ASC)]),
                    IndexModel([('meter_type', ASC)]),
                    IndexModel([('meter_phase', ASC)]),
                    IndexModel([('acct_status', ASC)]),
@@ -320,5 +320,5 @@ class MongoDbSetupMiddleware:
                    IndexModel([('type', ASC)]),
                    IndexModel([('name', ASC), ('source_feeder', ASC)],
                               unique=True)]
-        db.stations.create_indexes(indexes)
+        #db.stations.create_indexes(indexes)
 

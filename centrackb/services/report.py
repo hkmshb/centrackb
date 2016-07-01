@@ -183,6 +183,7 @@ def export_captures_to_csv(filename, records):
         if key in report_cols:
             value = d[key]
             d[key] = db.get_station_name(value)
+            d['datetime_today'] = d['datetime_today'].strftime('%Y-%d-%m')
         return d
     
     filepath = os.path.join(REPORTS_DIR, filename)
@@ -209,6 +210,7 @@ def export_captures_to_xls(filename, records):
             if key in report_cols:
                 value = d[key]
                 d[key] = db.get_station_name(value)
+                d['datetime_today'] = d['datetime_today'].strftime('%Y-%d-%m')
             yield d
     
     filepath = os.path.join(REPORTS_DIR, filename)
