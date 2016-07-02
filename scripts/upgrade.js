@@ -23,12 +23,6 @@ var hs = {
             }
         );
     },
-
-    dropField: function(collection, fieldname) {
-        var query = {};
-        query[fieldname] = 1;
-        collection.update({}, {$unset: query}, false, true);
-    },
     
     copyField: function(collection, ofieldname, nfieldname, transform) {
         var query = {};
@@ -38,10 +32,31 @@ var hs = {
         
         collection.find().snapshot().forEach(
             function(e) {
-                query[nfieldname] = transform(e[ofieldname]);
-                collection.update({_id: e._id}, {$set: query});
+                if (ofieldname in e) {
+                    query[nfieldname] = transform(e[ofieldname]);
+                    collection.update({_id: e._id}, {$set: query});
+                };
             }
         );
+    },
+    
+    copyFields: function(collection, names, transform) {
+        for (var i in names) {
+            var fields = names[i];
+            this.copyField(collection, fields[0], fields[1], transform);
+        }
+    },
+    
+    dropField: function(collection, fieldname) {
+        var query = {};
+        query[fieldname] = 1;
+        collection.update({}, {$unset: query}, false, true);
+    },
+    
+    dropFields: function(collection, fieldnames) {
+        for (var i in fieldnames) {
+            this.dropField(collection, fieldnames[i]);
+        }
     },
     
     createField: function(collection, fieldname, defaultValue) {
@@ -81,6 +96,30 @@ var hs = {
                 }});
             }
         );
+        
+        // TODO: supplied find criteria
+        // copy fields
+        this.copyFields(collection, [
+            ['kg_Id', 'kangis_no'],
+            ['addy_no', 'addr_no'],
+            ['addy_street', 'addr_street'],
+            ['addy_town_city', 'addr_town'],
+            ['addy_state', 'addr_state'],
+            ['addy_lga', 'addr_lga'],
+            ['addy_landmark', 'addr_landmark'],
+            ['new_tholder', 'landlord_name'],
+            ['tariff_new', 'tariff_pp']]);
+        
+        // TODO: supplied find criteria
+        sleep(3000);
+        this.dropFields(collection, [
+            '_duration', '_submitted_by', '_status',
+            'kg_Id', 'addy_no', 'addy_street', 'addy_town_city', 'addy_state',
+            'addy_lga', 'addy_landmark', 'substation', 'new_tholder', 'tariff_new', 
+            'last_payment', 'alt_power_source', 'uuid', 'acct_status_na_reason',
+            'meter_status_other', 'meter_status_na_reason', 'meter_accessible',
+            'current_bill', 'outstanding_amt', 'bill_assessment', 'proposed_bill'
+        ]);
     },
     
     updateXFormContent: function() {
@@ -119,6 +158,7 @@ var hs = {
         this._doUpgrade('drop-indexes', function() {
             self.dropIndexes(db.xforms);
             self.dropIndexes(db.projects);
+            self.dropIndexes(db.stations);
         });
         
         this._doUpgrade('rename-last-modified-field', function(){
