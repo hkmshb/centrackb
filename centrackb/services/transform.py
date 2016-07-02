@@ -10,6 +10,22 @@ RULES = {
             '_bamboo_dataset_id',
             'meta/instanceID',
             '_geolocation',
+            
+            # form-07 & less
+            'uuid',
+            '_status',
+            '_duration',
+            '_submitted_by',
+            'last_payment',
+            'alt_power_source',
+            'acct_status_na_reason',
+            'meter_status_other',
+            'meter_status_na_reason',
+            'meter_accessible',
+            'current_bill',
+            'outstanding_amt',
+            'bill_assessment',
+            'proposed_bill'
         ],
         'name_map': {
             'multi_source': 'multi',
@@ -161,15 +177,14 @@ def to_flatten_dict(entry):
     _xform_id_str = target['_xform_id_string']
     if _xform_id_str.startswith('cust'):
         if _xform_id_str.startswith('custform0'):
-            target['project_id'] = 'f13e_cf_KN'
+            target['project_id'] = 'f13e'
         else:
-            target['project_id'] = 'f13e_cu_KN'
+            target['project_id'] = 'f13e'
         
         target['enum_id'] = 'X/4Q2015'
     else:
         parts = _xform_id_str.split('_')
-        xform_id = '%s_%s_%s' % (parts[0], parts[1][:2],  parts[2])
-        target['project_id'] = xform_id
+        target['project_id'] = parts[0]
     
     ## more entries
     rseq = target['rseq']
@@ -247,8 +262,7 @@ def ndc_flatten_dict(entry):
 
     _xform_id_str = target['_xform_id_string'].replace('_nerc', '')
     parts = _xform_id_str.split('_')
-    xform_id = "{}_{}_{}".format(parts[0], parts[1][:2], parts[2])
-    target['project_id'] = xform_id
+    target['project_id'] = parts[0]
     
     target['group'] = target['enum_id'][0]
     target['station'] = target['cin_station']
