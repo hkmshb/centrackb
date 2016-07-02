@@ -185,7 +185,7 @@ def project_sync(project_code):
         # pull new captures
         try:
             transformed, pull_count = [], 0
-            for captures in api.get_captures(xform.id, start=count):
+            for captures in api.get_captures(int(xform.object_id), start=count):
                 logging.debug('# captures pulled: %s', len(captures))
                 if captures:
                     pull_count += len(captures)

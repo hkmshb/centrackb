@@ -2,7 +2,7 @@
 Transform json data from on form to another.
 """
 from datetime import datetime
-
+from dateutil.parser import parse
 
 RULES = {
     'instance': {
@@ -12,23 +12,37 @@ RULES = {
             '_geolocation',
         ],
         'name_map': {
-            'addy_house_no': 'addy_no',
             'multi_source': 'multi',
             'occupant_status': 'occupant',
             'neighbour_rseqid': 'neighbour_rseq',
             'cust_gps_coord': 'gps',
             'addr_gps': 'gps',
             'rseqId': 'rseq',
+            
+            # form-08 compatible
+            'addy_landmark': 'addr_landmark',
+            'addy_house_no': 'addr_no',
+            'addy_street': 'addr_street',
+            'addy_town_city': 'addr_town',
+            'addy_state': 'addr_state',
+            'addy_lga': 'addr_lga',
+            
+            'new_tholder': 'landlord_name',
+            'tariff_new': 'tariff_pp',
+            'kg_Id': 'kangis_no',
         },
         'name_map2': {  
-            # form-08 entries
-            'kangis_no': 'kg_Id',
-            'addr_no':'addy_no',
-            'addr_street':'addy_street',
-            'addr_state':'addy_state',
-            'addr_lga':'addy_lga',
-            'tariff_pp': 'tariff_new',
-            'landlord_name':'new_tholder',
+            ## form-08 entries
+            ## -- no longer required -- now defacto as
+            ## form-07 & less would be adjusted to match this
+            
+            #'kangis_no': 'kg_Id',
+            #'addr_no':'addy_no',
+            #'addr_street':'addy_street',
+            #'addr_state':'addy_state',
+            #'addr_lga':'addy_lga',
+            #'tariff_pp': 'tariff_new',
+            #'landlord_name':'new_tholder',
         },
         'transform': [
             'cin_station',
@@ -38,6 +52,12 @@ RULES = {
         ],
     }
 }
+
+def _norm_dates(entry):
+    date_fields = ['_submission_time', 'datetime_start', 'datetime_end',
+        'datetime_today']
+    for f in date_fields:
+        entry[f] = parse(entry[f])
 
 
 def to_nested_dict(d):
@@ -152,21 +172,36 @@ def to_flatten_dict(entry):
         target['project_id'] = xform_id
     
     ## more entries
+    rseq = target['rseq']
     target['group'] = target['enum_id'][0]
-    target['station'] = target['rseq'][:6]
-    target['upriser'] = target['rseq'][:8]
+    target['station'] = rseq[:6]
+    target['upriser'] = rseq[:8]
     target['date_created'] = today_date
     target['last_updated'] = None
     target['validated'] = False
     target['snapshots'] = {}
     target['dropped'] = False
+    
+    ## centrak compatibility
+    target['cin_station'] = target['station']
+    target['cin_ltroute'] = "{}/00/00".format(rseq[7])
+    target['cin_custno'] = rseq[-4:]
+    target['cin'] = "{}/{}/{}".format(
+        target['cin_station'], 
+        target['cin_ltroute'],
+        target['cin_custno'])
+    
+    if 'neighbour_rseq' in target and target['neighbour_rseq']:
+        target['neighbour_cin'] = target['neighbour_rseq'][-4:]
+    
+    _norm_dates(target)
     return target
 
 
 def ndc_flatten_dict(entry):
     """Transforms Onadata form instance json to consumable form."""
     target = {}
-    today_date = datetime.today().date().isoformat()
+    today_date = datetime.now()
     rules_excl  = RULES['instance']['excludes']
     rules_nmap  = RULES['instance']['name_map']
     rules_nmap2 = RULES['instance']['name_map2']
@@ -217,7 +252,6 @@ def ndc_flatten_dict(entry):
     
     target['group'] = target['enum_id'][0]
     target['station'] = target['cin_station']
-    target['substation'] = target['cin_station']
     target['upriser'] = "{}/{}".format(target['cin_station'], target['cin_ltroute'][0])
     target['cin'] = "{}/{}/{}".format(target['cin_station'], target['cin_ltroute'], target['cin_custno'])
     target['rseq'] = "{}/{}".format(target['upriser'], target['cin_custno'])
@@ -230,4 +264,6 @@ def ndc_flatten_dict(entry):
     if 'neighbour_cin' in target and target['neighbour_cin']:
         target['neighbour_rseq'] = "{}/{}".format(target['upriser'], target['neighbour_cin'])
     
+    _norm_dates(target)
     return target
+

@@ -195,8 +195,9 @@ class CaptureBase:
                    .count({'_xform_id_string': ref_id})
 
     def count_by_project(self, project_id):
+        query = {'$regex': '%s.*' % project_id, '$options':'i'}
         return self.db\
-                   .count({'project_id': project_id})
+                   .count({'project_id': query})
 
     def count_by_station(self, station_code):
         return self.db\
@@ -230,8 +231,9 @@ class CaptureBase:
         return utils.paginate(cur) if paginate else cur
 
     def get_by_project(self, project_id, paginate=True):
+        query = {'$regex': '%s.*' % project_id, '$options':'i'}
         cur = self.db\
-                  .find({'project_id': project_id})\
+                  .find({'project_id': query})\
                   .sort('date_created', pymongo.DESCENDING)
         return utils.paginate(cur) if paginate else cur
     

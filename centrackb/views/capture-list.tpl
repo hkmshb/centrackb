@@ -70,7 +70,7 @@
                     % end 
                     </td>
                     <td>{{ shorten(f(r.cust_name)).title() }}</td>
-                    <td>{{ shorten("%s %s" % (addy(r.addy_no), addy(r.addy_street))).title() }}
+                    <td>{{ shorten("%s %s" % (addy(r.addr_no), addy(r.addr_street))).title() }}
                     <td>{{ f(r.cust_mobile1 or r.cust_mobile2) }}</td>
                     <td>{{ r.acct_status }}</td>
                     <td>{{ f(r.acct_no) }}</td>

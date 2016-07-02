@@ -46,13 +46,13 @@ report_cols = [
     # gen
     'datetime_today', 'station', 'rseq', 'enum_id', 
     # cust-info
-    'cust_name', 'cust_mobile1', 'addy_no', 'addy_street', 
+    'cust_name', 'cust_mobile1', 'addr_no', 'addr_street', 
     # acct-info
     'acct_status', 'book_code', 'acct_no', 'tariff', 
-    'tariff_new',
+    'tariff_pp',
     # meter-status
     'meter_status', 'meter_no', 'meter_type', 'meter_phase',
-    'amt_4_adc', 'last_payment', 'multi',
+    'amt_4_adc', 'multi',
     # others
     'plot_type', 'occupant', 'gps', 'remarks'
 ]
