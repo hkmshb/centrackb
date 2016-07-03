@@ -376,8 +376,9 @@ class CaptureForm(FormBase):
         ]),
         'widgets': OrderedDict({
             'select': ['acct_status', 'tariff', 'tariff_pp', 'meter_type', 
-                'meter_phase', 'meter_brand', 'meter_status', 'meter_location1', 
-                'plot_type', 'supply_source', 'occupant', 'addr_state', 'addr_lga'],
+                'meter_phase', 'meter_phase_pp', 'meter_brand', 'meter_status', 
+                'meter_location1', 'plot_type', 'supply_source', 'occupant', 
+                'addr_state', 'addr_lga'],
             'multi-select': ['remarks'],
         }),
     })

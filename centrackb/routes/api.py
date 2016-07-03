@@ -168,10 +168,11 @@ def _collect_choices():
         all = {
             'acct_status': OrderedDict(choices.ACCT_STATUS),
             'tariff': OrderedDict(choices.TARIFF),
-            'tariff_pp': OrderedDict(choices.TARIFF_NEW),
+            'tariff_pp': OrderedDict(choices.TARIFF),
             'meter_type': OrderedDict(choices.METER_TYPE),
             'meter_brand': OrderedDict(choices.METER_BRAND),
             'meter_phase': OrderedDict(choices.METER_PHASE),
+            'meter_phase_pp': OrderedDict(choices.METER_PHASE),
             'meter_status': OrderedDict(choices.METER_STATUS),
             'meter_location': OrderedDict(choices.METER_LOCATION),
             'plot_type': OrderedDict(choices.PLOT_TYPE),

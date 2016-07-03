@@ -39,7 +39,6 @@ TARIFF = (
     ('A3',   'A3'),
     ('L1',   'L1'),
 )
-TARIFF_NEW = TARIFF
 
 METER_TYPE = (
     ('none',    'None'),
@@ -78,6 +77,7 @@ METER_LOCATION = (
 )
 
 METER_PHASE = (
+    ('none',    'None'),
     ('1-phase', '1 Phase'),
     ('3-phase', '3 Phase'),
 )
