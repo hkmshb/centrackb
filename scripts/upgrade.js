@@ -118,7 +118,8 @@ var hs = {
             'addy_lga', 'addy_landmark', 'substation', 'new_tholder', 'tariff_new', 
             'last_payment', 'alt_power_source', 'uuid', 'acct_status_na_reason',
             'meter_status_other', 'meter_status_na_reason', 'meter_accessible',
-            'current_bill', 'outstanding_amt', 'bill_assessment', 'proposed_bill'
+            'meter_accessibility', 'meter_manuf_date', 'meter_cert_no', 'current_bill', 
+            'outstanding_amt', 'bill_assessment', 'proposed_bill'
         ]);
     },
     
