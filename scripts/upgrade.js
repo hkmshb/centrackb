@@ -207,6 +207,7 @@ var hs = {
         this._doUpgrade('update-survey-schema', function() {
             self.updateSurveySchema(db.captures);
             self.updateSurveySchema(db.updates);
+            self.dropField(db.updates, 'snapshots');
         });
     }
 };
