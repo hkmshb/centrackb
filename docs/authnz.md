@@ -26,7 +26,7 @@ of the automated mailing of the verification link.
 
 The registered user details gets stored in the backend store as expected, however
 to activate the account, the registration code has to be copied and used to form
-a url path as thus: [/activate/<registration-code]
+a url path as thus: [/activate/<registration-code>]
 
 The resulting url when visited causes the account in question to be activated.
 This is a crude form of human review and activation of pending account creation

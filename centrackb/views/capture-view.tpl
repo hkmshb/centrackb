@@ -86,7 +86,8 @@
                         <div class="collapse_:{ title }: panel-collapse" ng-class="{'collapse': title !== 'capture'}">
                             <div class="panel-body">
                                 <div class="form-group" ng-repeat="(field, label) in meta">
-                                    <label for="id_:{field}:" class="col-md-4 col-sm-4 control-label">:{ label }:: </label>
+                                    <label for="id_:{field}:" class="col-md-4 col-sm-4 control-label"
+                                           style="padding-top:5px;">:{ label }:: </label>
                                     
                                     <div class="col-md-8 col-sm-8" ng-if="field[0] == '_' || title == 'meta'">
                                         <label ng-if="title != 'meta'" id="id_:{ field }:" name=":{ field }:" class="form-control-static">:{ capture[field.substr(1)] }:</label>
@@ -114,10 +115,18 @@
                                         <input type="text" id="id_:{ field }:" name=":{ field }:" class="form-control" ng-model="capture[field]"
                                                change-on-blur="onRSeqChanged(newValue, oldValue)"
                                                ng-if="field === 'rseq' && is_update_record" disabled="" />
+                                               
                                         <input type="text" id="id_:{ field }:" name=":{ field }:" class="form-control" ng-model="capture[field]"
-                                               ng-if="field !== 'rseq' && !is_update_record" />
+                                               change-on-blur="onLTRouteChanged(newValue, oldValue)"
+                                               ng-if="field === 'cin_ltroute' && !is_update_record" />
+                                        <input type="text" id="id _:{ field }:" name=":{ field }:" class="form-control" ng-model="capture[field]"
+                                               change-on-blur="onLTRouteChanged(newValue, oldValue)"
+                                               ng-if="field === 'cin_ltroute' && is_update_record" disabled="" />
+                                        
                                         <input type="text" id="id_:{ field }:" name=":{ field }:" class="form-control" ng-model="capture[field]"
-                                               ng-if="field !== 'rseq' && is_update_record" readonly="" />
+                                               ng-if="field !== 'rseq' && field !== 'cin_ltroute' && !is_update_record" />
+                                        <input type="text" id="id_:{ field }:" name=":{ field }:" class="form-control" ng-model="capture[field]"
+                                               ng-if="field !== 'rseq' && field !== 'cin_ltroute' && is_update_record" readonly="" />
                                     </div>
                                 </div>
                             </div>

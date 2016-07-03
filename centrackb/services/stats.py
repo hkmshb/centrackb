@@ -170,6 +170,9 @@ def _purity_summary(df, prefix):
 
     # fixed/updated records
     key = 'last_updated'
+    if not key in df.columns:
+        df[key] = ''
+    
     f = df[df[key].isnull() == False]
     result['%s_updated' % prefix] = f.index.size
     return result

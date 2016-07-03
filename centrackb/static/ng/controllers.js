@@ -42,7 +42,7 @@
             
             // next controls
         };
-
+        
         // functions...
         $scope.displayCapture = function(captureId, isFirst, captureType) {
             // pull capture from server
@@ -73,6 +73,7 @@
             scope.capture = capture;
             scope.prefix = (new Date().getTime() % 100000);
             scope.onRSeqChanged = handleRSeqChanged(scope);
+            scope.onLTRouteChanged = handleLTRouteChanged(scope);
             
             // modify form
             form.find('.section-head').text(
@@ -86,7 +87,7 @@
             }
             
             // update records shouldn't be editable
-            scope.is_update_record = (capture.project_id.indexOf('_cu_') !== -1);
+            scope.is_update_record = (capture._xform_id_string.indexOf('_cu') !== -1);
             
             var new_form = $compile(form)(scope)
               , btnExpand = new_form.find('[name=expand]')
@@ -106,16 +107,15 @@
               , scope = $scope._local_scopes[key];
             
             if (key !== 'main' && scope.is_update_record) {
-                if (scope.capture.dropped !== true)
-                    return false;
-                
-                var msg = "Are you sure you want to drop this record? "
-                        + "It would no longer be listed as an update "
-                        + "for Route Sequence: " + scope.capture.rseq
-                        + "?";
-                
-                if (confirm(msg) !== true)
-                    return false;
+                if (scope.capture.dropped === true) {
+                    var msg = "Are you sure you want to drop this record? "
+                            + "It would no longer be listed as an update "
+                            + "for Route Sequence: " + scope.capture.rseq
+                            + "?";
+                    
+                    if (confirm(msg) !== true)
+                        return false;
+                }
             }
                     
             if (scope !== null) {
@@ -124,7 +124,13 @@
                 
                 // validate route sequence
                 if (!isValidRouteSeqFormat(scope.capture.rseq)) {
-                    alert('Capture route sequence format is invalid.');
+                    alert("Capture 'Route Sequence Format' is invalid.");
+                    return false;
+                }
+                
+                // validate lt route
+                if (!isValidLTRouteFormat(scope.capture.cin_ltroute)) {
+                    alert("Capture 'CIN LT Route' format is invalid.");
                     return false;
                 }
                 
@@ -179,7 +185,6 @@
             $scope.displayCapture(captureId, true, $scope.recordType);
         });
         
-
         var isValidRouteSeqFormat = function(value) {
             if (value && value.length === 13) {
                 var parts = value.split('/');
@@ -199,6 +204,24 @@
                         return false;
                     
                     if (isNaN(sn)) 
+                        return false;
+                    return true;
+                }
+            }
+            return false;
+        },
+        isValidLTRouteFormat = function(value) {
+            if (value && value.length === 7) {
+                var parts = value.split('/');
+                if (parts.length === 3) {
+                    if (parts[0].length !== 1 || parts[1].length !== 2 || parts[2].length !== 2)
+                        return false;
+                    
+                    var upcode=Number(parts[0]), ltrno=Number(parts[1]), swno=Number(parts[2]);
+                    if (isNaN(upcode) || upcode < 0 || upcode > 4)
+                        return false;
+                    
+                    if ((isNaN(ltrno) || ltrno < 0) || (isNaN(swno) || swno < 0))
                         return false;
                     return true;
                 }
@@ -225,7 +248,7 @@
             return false;
         },
         buildUpdateUrl = function(scope) {
-            var part = scope.capture.project_id.indexOf('_cf_') !== -1
+            var part = scope.capture._xform_id_string.indexOf('_cf') !== -1
                             ? 'captures': 'updates';
             return $scope._apiUrlPrefix + part + '/' + scope.capture._id + '/update';
         },
@@ -234,9 +257,35 @@
                 if (!isValidRouteSeqFormat(newValue))
                     return;
                 
-                var parts = newValue.toUpperCase().split('/');
+                var newValueUCase = newValue.toUpperCase()
+                  , parts = newValueUCase.split('/');
+                scope.capture.rseq = newValueUCase;
                 scope.capture.station = parts[0];
                 scope.capture.upriser = parts[0] + "/" + parts[1];
+                
+                // cin update
+                var cinParts = scope.capture.cin.split('/')
+                  , cinStation, cinLTRoute, cinCustno;
+                scope.capture.cin_station = cinStation = parts[0];
+                scope.capture.cin_ltroute = cinLTRoute = parts[1] + "/" + 
+                                        cinParts[2] + "/" + cinParts[3];
+                scope.capture.cin_custno = cinCustno = parts[2];
+                scope.capture.cin = cinStation + "/" + cinLTRoute + "/" 
+                                  + cinCustno;
+            };
+        },
+        handleLTRouteChanged = function(scope) {
+            return function(newValue, oldValue) {
+                if (!isValidLTRouteFormat(newValue))
+                    return;
+                
+                var parts = newValue.split('/')
+                  , rParts = scope.capture.rseq.split('/')
+                  , upriser = rParts[0] + "/" + parts[0]; 
+                
+                scope.capture.upriser = upriser;
+                scope.capture.rseq = upriser + "/" + rParts[2];
+                scope.capture.cin = rParts[0] + "/" + newValue + "/" + rParts[2];
             };
         },
         togglePanes = function(icon, form) {

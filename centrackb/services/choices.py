@@ -9,6 +9,7 @@ CAPTURE_CATEGORIES = (
 
 ACCT_STATUS = (
     ('unknown',         'Yet to be Determined'),
+    ('ytbd',            'Yet to be Determined'),
     ('new',             'New'),
     ('existing',        'Existing'),
     ('no-supply',       'No Supply'),
